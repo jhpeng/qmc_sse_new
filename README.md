@@ -48,5 +48,6 @@ Now that you're more familiar with your Bitbucket repository, go ahead and add a
 
 ## Rule of the function
 
-**Function Name**     : *filename_description_addtional* for example -> datatypes_create_sequence_int4
-**Function Argument** : function(writing,reading,arguments)
+**Function Name**     : *filename_description_addtional* for example -> datatypes_create_sequence_int4.
+
+**Function Argument** : function(writing,reading,arguments).
