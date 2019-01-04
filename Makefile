@@ -5,7 +5,7 @@
 CC	= gcc
 
 # define any compile-time flags
-CFLAGS = -O0 -Wall -g
+CFLAGS = -O3 -Wall -g
 
 # define openmp flags
 OPENMP  = -fopenmp
@@ -21,7 +21,7 @@ LFLAGS	= -L/usr/local/lib
 LIBS	= -lm -lgsl -lgslcblas
 
 # define the C object files
-OBJS	= DataStruct.o SEAlgorithm.o
+OBJS	= DataStruct.o SEAlgorithm.o MonteCarlo.o Estimetor.o
 
 #define the directory for object
 OBJSDIR = object

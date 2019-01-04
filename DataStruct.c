@@ -111,7 +111,11 @@ OperatorLoop* CreateOperatorLoop(int length)
     opl->check=1;
     opl->loop = CreateIntSequence(2*length);
     opl->lvc  = CreateIntSequence(4*length);
-    for(int i=0;i<4*length;++i) opl->lvc->data[i]=-1;
+    opl->cross= CreateIntSequence(4*length);
+    for(int i=0;i<4*length;++i){
+         opl->lvc->data[i]=-1;
+         opl->cross->data[i]=-1;
+    }
     for(int i=0;i<2*length;++i) opl->loop->data[i]=-1;
 
     return opl;
@@ -139,6 +143,7 @@ void DestroyOperatorLoop(OperatorLoop* opl)
 {
     DestroyIntSequence(opl->lvc);
     DestroyIntSequence(opl->loop);
+    DestroyIntSequence(opl->cross);
     free(opl);
 }
 
@@ -151,6 +156,7 @@ SEPlaceHolder* CreateSEPlaceHolder()
     placeholder->length=0;
     placeholder->isweep=0;
     placeholder->nsweep=0;
+    placeholder->cutoff=0;
     placeholder->seed=0;
     placeholder->set_lattice=0;
     placeholder->set_length=0;

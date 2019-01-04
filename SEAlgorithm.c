@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gsl/gsl_rng.h>
+
 #include "DataStruct.h"
+#include "SEAlgorithm.h"
 
 
 void LatticeConfSetMapping(LatticeConf* lconf, bond2sigma *mapping)
@@ -12,6 +14,11 @@ void LatticeConfSetMapping(LatticeConf* lconf, bond2sigma *mapping)
 void LatticeConfApplyMapping(LatticeConf* lconf, int bond)
 {
     lconf->mapping(&lconf->left,&lconf->right,lconf->shape,bond);
+}
+
+void LatticeConfSynchronizeSigma(LatticeConf* lconf)
+{
+    for(int i=0;i<lconf->nsite;++i) lconf->sigmap->data[i]=lconf->sigma0->data[i];
 }
 
 void OperatorSequenceSort(OperatorSequence* ops)
@@ -25,123 +32,6 @@ void OperatorSequenceSort(OperatorSequence* ops)
             ++ops->noo;
         }
     }
-}
-
-void SEPlaceHolderSetLattice(
-                    SEPlaceHolder* placeholder, 
-                    bond2sigma *mapping, 
-                    const int* shape, 
-                    int dims, 
-                    int model)
-{
-    if(placeholder->set_lattice){
-        printf("Create the new system and overwrite the original lconf\n");
-        DestroyLatticeConf(placeholder->lconf);
-    }
-
-    if(model==0){
-        placeholder->set_lattice=1;
-        placeholder->lconf = CreateSquareLatticeConf(shape,dims);
-        placeholder->lconf->mapping = mapping;
-    }
-    else{
-        printf("No such model %d\n",model);
-        exit(-1);
-    }
-}
-
-void SEPlaceHolderSetLength(SEPlaceHolder* placeholder, int length, int ndiff)
-{
-    if(placeholder->set_length && placeholder->length<length){
-        DestroyOperatorLoop(placeholder->opl);
-        placeholder->opl = CreateOperatorLoop(length);
-        
-        OperatorSequence* ops = CreateOperatorSequence(length,ndiff);
-        ops->noo = placeholder->ops->noo;
-        for(int i=0;i<placeholder->length;++i){
-            ops->sequence->data[i] = placeholder->ops->sequence->data[i];
-            ops->sort->data[i] = placeholder->ops->sort->data[i];
-        }
-        DestroyOperatorSequence(placeholder->ops);
-        placeholder->ops = ops;
-        
-    }
-    else{
-        placeholder->set_length=1;
-        placeholder->length=length;
-        placeholder->ops = CreateOperatorSequence(length,ndiff);
-        placeholder->opl = CreateOperatorLoop(length);
-    }
-}
-
-void SEPlaceHolderSetRandomSeed(SEPlaceHolder* placeholder, int seed)
-{
-    if(placeholder->set_random){
-        gsl_rng_free(placeholder->rng);
-        placeholder->rng = gsl_rng_alloc(gsl_rng_taus);
-        gsl_rng_set(placeholder->rng,seed);
-    }
-    else{
-        placeholder->set_random=1;
-        placeholder->rng = gsl_rng_alloc(gsl_rng_taus);
-        gsl_rng_set(placeholder->rng,seed);
-    }
-}
-
-void SEPlaceHolderSetNsweep(SEPlaceHolder* placeholder, int nsweep)
-{
-    placeholder->nsweep=nsweep;
-}
-
-void SEPlaceHolderSetBeta(SEPlaceHolder* placeholder, double beta)
-{
-    placeholder->beta=beta;
-}
-
-void SEPlaceHolderSetError(SEPlaceHolder* placeholder, double max_err)
-{
-    placeholder->max_err=max_err;
-}
-
-int SEPlaceHolderCheckSetting(SEPlaceHolder* placeholder)
-{
-    int check=1;
-    printf("-----------------\n");
-    printf("SEPlaceHolderCheckSetting : checking SEPlaceHolder...\n");
-    if(placeholder->set_lattice^1){
-        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetLattice\n");
-        check=0;
-    }
-    
-    if(placeholder->set_length^1){
-        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetLength\n");
-        check=0;
-    }
-
-    if(placeholder->set_random^1){
-        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetRandomSeed\n");
-        check=0;
-    }
-
-    if(placeholder->nsweep==0){
-        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetNsweep\n");
-        check=0;
-    }
-
-    if(placeholder->beta==-1){
-        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetBeta\n");
-        check=0;
-    }
-    
-    if(placeholder->max_err==-1){
-        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetError\n");
-        check=0;
-    }
-
-    printf("finished check SEPlaceHolder\n");
-    printf("-----------------\n");
-    
-    return check;
 }
 
 void SEOps2Lvc(
@@ -163,7 +53,10 @@ void SEOps2Lvc(
         lconf->first->data[i]=-1;
         lconf->last->data[i] =-1;
     }
-    for(i=0;i<4*length;++i) opl->lvc->data[i]=-1;
+    for(i=0;i<4*length;++i){
+        opl->lvc->data[i]=-1;
+        opl->cross->data[i]=-1;
+    }
     for(i=0;i<noo;++i){
         p  = ops->sort->data[i];
         v0 = 4*p;
@@ -195,23 +88,10 @@ void SEOps2Lvc(
         if(lconf->last->data[i]!=-1){
             opl->lvc->data[lconf->last->data[i]]=lconf->first->data[i];
             opl->lvc->data[lconf->first->data[i]]=lconf->last->data[i];
+            opl->cross->data[lconf->last->data[i]]=i;
+            opl->cross->data[lconf->first->data[i]]=i;
         }
     }
-}
-
-static int check_cross_boundary(
-                    LatticeConf* lconf, 
-                    int leg)
-{
-    int check=1,flip=-1;
-    for(int i=0;i<lconf->nsite && check;++i){
-        if(lconf->first->data[i]==leg || lconf->last->data[i]==leg){
-            flip = i;
-            check=0;
-        }
-    }
-
-    return flip;
 }
 
 void SETraverseLoop(
@@ -232,8 +112,8 @@ void SETraverseLoop(
     int v,length=ops->length;
     lconf->nflip=0;
     opl->noo=0;
-    for(int i=0;i<2*length;++i) opl->loop->data[i]=-1;
-    for(int i=0;i<lconf->nsite;++i) lconf->flip->data[i]=-1;
+    //for(int i=0;i<2*length;++i) opl->loop->data[i]=-1;
+    //for(int i=0;i<lconf->nsite;++i) lconf->flip->data[i]=-1;
     for(v=opl->v0;v<4*length;++v){
         if(opl->lvc->data[v]!=-1){
             int check=1;
@@ -242,8 +122,8 @@ void SETraverseLoop(
             while(check){
                 opl->loop->data[opl->noo] = prev/4;
                 opl->noo++;
-                flip = check_cross_boundary(lconf,prev);
-                if(flip!=-1){
+                if(opl->cross->data[prev]!=-1){
+                    flip=opl->cross->data[prev];
                     lconf->flip->data[lconf->nflip]=flip;
                     lconf->nflip++;
                 }
@@ -297,12 +177,182 @@ void mapping_1d(int* left, int* right, const int* shape, int bond)
     }
 }
 
-#if 1
+void mapping_2d(int *first, int *second, const int *size, int bond)
+{
+    int M=size[0];
+    int N=size[1];
+    int nsite=M*N;
+    int t=bond/nsite;
+
+    if(t==0){
+        if(bond%M==(M-1)){
+            *first=bond;
+            *second=M*(int)(bond/M);
+        }
+        else{
+            *first=bond;
+            *second=bond+1;
+        }
+    }
+    else if(t==1){
+        int k=bond-nsite;
+        int p=k/M;
+        if(p==(N-1)){
+            *first=k;
+            *second=k%M;
+        }
+        else{
+            *first=k;
+            *second=k+M;
+        }
+    }
+    else{
+        printf("bond is not satisfy the size! %d\n",bond);
+        exit(-1);
+    }
+}
+
+void SEPlaceHolderSetLattice(
+                    SEPlaceHolder* placeholder, 
+                    bond2sigma *mapping, 
+                    const int* shape, 
+                    int dims, 
+                    int model)
+{
+    if(placeholder->set_lattice){
+        printf("Create the new system and overwrite the original lconf\n");
+        DestroyLatticeConf(placeholder->lconf);
+    }
+
+    if(model==0){
+        placeholder->set_lattice=1;
+        placeholder->lconf = CreateSquareLatticeConf(shape,dims);
+        placeholder->lconf->mapping = mapping;
+    }
+    else{
+        printf("No such model %d\n",model);
+        exit(-1);
+    }
+}
+
+void SEPlaceHolderSetLength(SEPlaceHolder* placeholder, int length, int ndiff)
+{
+    if(placeholder->set_length && placeholder->length<length){
+        DestroyOperatorLoop(placeholder->opl);
+        placeholder->opl = CreateOperatorLoop(length);
+        
+        OperatorSequence* ops = CreateOperatorSequence(length,ndiff);
+        ops->noo = placeholder->ops->noo;
+        for(int i=0;i<length;++i){
+            if(i<placeholder->length){
+                ops->sequence->data[i] = placeholder->ops->sequence->data[i];
+                ops->sort->data[i] = placeholder->ops->sort->data[i];
+            }
+            else{
+                ops->sequence->data[i] = -1;
+                ops->sort->data[i] = -1;
+            }
+        }
+        placeholder->length=length;
+        DestroyOperatorSequence(placeholder->ops);
+        placeholder->ops = ops;
+        
+    }
+    else{
+        placeholder->set_length=1;
+        placeholder->length=length;
+        placeholder->ops = CreateOperatorSequence(length,ndiff);
+        placeholder->opl = CreateOperatorLoop(length);
+    }
+}
+
+void SEPlaceHolderSetRandomSeed(SEPlaceHolder* placeholder, int seed)
+{
+    if(placeholder->set_random){
+        gsl_rng_free(placeholder->rng);
+        placeholder->rng = gsl_rng_alloc(gsl_rng_taus);
+        gsl_rng_set(placeholder->rng,seed);
+    }
+    else{
+        placeholder->set_random=1;
+        placeholder->rng = gsl_rng_alloc(gsl_rng_taus);
+        gsl_rng_set(placeholder->rng,seed);
+    }
+}
+
+void SEPlaceHolderSetNsweep(SEPlaceHolder* placeholder, int nsweep, int cutoff)
+{
+    placeholder->nsweep=nsweep;
+    placeholder->cutoff=cutoff;
+}
+
+void SEPlaceHolderSetBeta(SEPlaceHolder* placeholder, double beta)
+{
+    placeholder->beta=beta;
+}
+
+void SEPlaceHolderSetError(SEPlaceHolder* placeholder, double max_err)
+{
+    placeholder->max_err=max_err;
+}
+
+int SEPlaceHolderCheckSetting(SEPlaceHolder* placeholder)
+{
+    int check=1;
+    printf("-----------------\n");
+    printf("SEPlaceHolderCheckSetting : checking SEPlaceHolder...\n");
+    if(placeholder->set_lattice^1){
+        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetLattice\n");
+        check=0;
+    }
+    
+    if(placeholder->set_length^1){
+        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetLength\n");
+        check=0;
+    }
+
+    if(placeholder->set_random^1){
+        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetRandomSeed\n");
+        check=0;
+    }
+
+    if(placeholder->nsweep==0){
+        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetNsweep\n");
+        check=0;
+    }
+
+    if(placeholder->beta==-1){
+        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetBeta\n");
+        check=0;
+    }
+    
+    if(placeholder->max_err==-1){
+        printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetError\n");
+        check=0;
+    }
+
+    printf("finished check SEPlaceHolder\n");
+    printf("-----------------\n");
+    
+    return check;
+}
+
+void SEPlaceHolderLengthMonitor(SEPlaceHolder* placeholder, double buffer)
+{
+    int noo=placeholder->ops->noo;
+    int ndiff=placeholder->ops->ndiff;
+    if(noo*buffer>placeholder->length){
+        SEPlaceHolderSetLength(placeholder,(int)(noo*buffer),ndiff);
+    }
+}
+
+#if 0
 int main()
 {
     int ndiff=2,length=12;
     int dims=1,shape[1]={8};
     int nsweep=1000000,seed=2133124;
+    int cutoff=2000;
     double beta=1024;
     double max_err=1.e-4;
 
@@ -310,7 +360,7 @@ int main()
     SEPlaceHolderSetLattice(placeholder,mapping_1d,shape,dims,0);
     SEPlaceHolderSetLength(placeholder,length,ndiff);
     SEPlaceHolderSetRandomSeed(placeholder, seed);
-    SEPlaceHolderSetNsweep(placeholder, nsweep);
+    SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
     SEPlaceHolderSetBeta(placeholder, beta);
     SEPlaceHolderSetError(placeholder, max_err);
     SEPlaceHolderCheckSetting(placeholder);

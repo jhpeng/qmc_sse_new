@@ -1,7 +1,8 @@
+#include <time.h>
 #include <gsl/gsl_rng.h>
 
-#ifndef DATATYPES_H
-#define DATATYPES_H
+#ifndef DATASTRUCT_H
+#define DATASTRUCT_H
 
 
 /*********Low level structure and function**********/
@@ -92,6 +93,7 @@ typedef struct OperatorLoop{
     int check;
     int v0;
     IntSequence *lvc;
+    IntSequence *cross;
     IntSequence *loop;
 } OperatorLoop;
 
@@ -114,11 +116,11 @@ typedef struct SEPlaceHolder{
     int length;
     int isweep;
     int nsweep;
+    int cutoff;
     int seed;
     int set_lattice;
     int set_length;
     int set_random;
-    int set_mapping;
     double beta;
     double max_err;
     gsl_rng* rng;
@@ -126,6 +128,23 @@ typedef struct SEPlaceHolder{
     OperatorSequence* ops;
     OperatorLoop* opl;
 } SEPlaceHolder;
+
+typedef void measurement(double*, double*, double*, SEPlaceHolder*, int);
+
+typedef struct Observable{
+    int nobs;
+    int nave;
+    int count;
+    int set_obs;
+    time_t start;
+    time_t end;
+    char** obs_name;
+    measurement** measure;
+    DoubleSequence* data;
+    double* mean;
+    double* var;
+    double* err;
+} Observable;
 
 SEPlaceHolder* CreateSEPlaceHolder();
 
