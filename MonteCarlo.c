@@ -5,6 +5,7 @@
 
 #include "DataStruct.h"
 #include "SEAlgorithm.h"
+#include "Estimetor.h"
 
 void MCInitializeLatticeConf(SEPlaceHolder* placeholder)
 {
@@ -95,10 +96,10 @@ void MCFlipUpdate(SEPlaceHolder* placeholder)
 int main()
 {
     int ndiff=2,length=50;
-    int dims=2,shape[2]={48,48};
+    int dims=2,shape[2]={16,16};
     int nsweep=1000000,seed=2133124;
-    int cutoff=2000;
-    double beta=512;
+    int cutoff=20000;
+    double beta=8;
     double max_err=1.e-4;
     double buffer=1.3;
 
@@ -112,13 +113,31 @@ int main()
     SEPlaceHolderCheckSetting(placeholder);
 
     MCInitializeLatticeConf(placeholder);
+
+    int nobs=4;
+    int nave=1000000;
+    Observable *obs = CreateObservable(nobs,nave);
+    ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
+    ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
+    ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+    ObservableSetMeasurement(obs,ObservableStiffnessX,"stif_x",NULL);
+
     int j=0;
-    while(j<1000){
+    for(j=0;j<cutoff;j++){
         MCDiagonalOperatorUpdateIsotropy(placeholder);
         MCOffDiagOperatorUpdate(placeholder);
         MCFlipUpdate(placeholder);
-        if(j%1000==0){
-            printf("%d %d %d\n",j,placeholder->ops->noo,placeholder->length);
+        SEPlaceHolderLengthMonitor(placeholder, buffer);
+    }
+    j=0;
+    placeholder->isweep=0;
+    while(j<nsweep){
+        MCDiagonalOperatorUpdateIsotropy(placeholder);
+        MCOffDiagOperatorUpdate(placeholder);
+        MCFlipUpdate(placeholder);
+        ObservableDoMeasurement(obs,placeholder);
+        if((j+1)%10000==0){
+            ObservableShow(obs,placeholder,0);
 #if 0
             for(int i=0;i<length;++i) printf("%d ",placeholder->ops->sequence->data[i]);
             printf("\n");
@@ -126,6 +145,7 @@ int main()
         }
 
         SEPlaceHolderLengthMonitor(placeholder, buffer);
+        placeholder->isweep++;
         j++;
     }
 
