@@ -23,6 +23,7 @@ void ObservableDoMeasurement(
 void ObservableShow(
                     Observable* obs,
                     SEPlaceHolder* placeholder,
+                    char* prefix,
                     int mode);
 
 double ObservableSpecificEnergy(

@@ -151,8 +151,8 @@ void SELoopUpdate(
         type = ops->sequence->data[p]%ops->ndiff;
         bond = ops->sequence->data[p]/ops->ndiff;
         if(type==0 || type==1){
-            type = type^1;
-            ops->sequence->data[p] = bond*ops->ndiff+type;
+                type = type^1;
+                ops->sequence->data[p] = bond*ops->ndiff+type;
         }
     }
     

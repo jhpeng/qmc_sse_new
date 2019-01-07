@@ -96,12 +96,15 @@ void MCFlipUpdate(SEPlaceHolder* placeholder)
 int main()
 {
     int ndiff=2,length=50;
-    int dims=2,shape[2]={16,16};
-    int nsweep=1000000,seed=2133124;
+    int dims=2,shape[2]={32,32};
+    int nsweep=1000000,seed=933927;
     int cutoff=20000;
-    double beta=8;
+    double beta=64;
     double max_err=1.e-4;
     double buffer=1.3;
+    char prefix[128];
+
+    sprintf(prefix,"data/shape_%d_%d_beta_%.1f",shape[0],shape[1],beta);
 
     SEPlaceHolder* placeholder = CreateSEPlaceHolder();
     SEPlaceHolderSetLattice(placeholder,mapping_2d,shape,dims,0);
@@ -110,8 +113,9 @@ int main()
     SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
     SEPlaceHolderSetBeta(placeholder, beta);
     SEPlaceHolderSetError(placeholder, max_err);
+#if 0
     SEPlaceHolderCheckSetting(placeholder);
-
+#endif
     MCInitializeLatticeConf(placeholder);
 
     int nobs=4;
@@ -137,7 +141,9 @@ int main()
         MCFlipUpdate(placeholder);
         ObservableDoMeasurement(obs,placeholder);
         if((j+1)%10000==0){
-            ObservableShow(obs,placeholder,0);
+            //ObservableShow(obs,placeholder,NULL,0);
+            ObservableShow(obs,placeholder,prefix,1);
+            ObservableShow(obs,placeholder,prefix,2);
 #if 0
             for(int i=0;i<length;++i) printf("%d ",placeholder->ops->sequence->data[i]);
             printf("\n");

@@ -6,6 +6,7 @@
 
 #include "DataStruct.h"
 #include "SEAlgorithm.h"
+#include "Monitor.h"
 
 Observable* CreateObservable(int nobs, int nave)
 {
@@ -93,28 +94,49 @@ void ObservableDoMeasurement(
 void ObservableShow(
                     Observable* obs,
                     SEPlaceHolder* placeholder,
+                    char* prefix,
                     int mode)
 {
+    int isweep = placeholder->isweep+1;
+    int nsweep = placeholder->nsweep;
+    double ratio = (double)isweep/nsweep*100;
+    char filename[128];
+    char name[]={"         "};
     MeanAverage(obs);
     //if model=0 : std output
     //if model=1 : output a text file
     //if model=2 : output a html file
 
-    switch(mode){
-        case 0:
+    if(mode==0){
             printf("Measurement ...\n");
+            printf("inverse temperature \t: %lf\n",placeholder->beta);
             printf("length of sequence \t: %d \nnumber of operator \t: %d\n",placeholder->ops->length,placeholder->ops->noo);
             printf("obs name  \t| mean   \t| var    \t| err    \t|\n");
-            char name[]={"         "};
             for(int i_obs=0;i_obs<obs->nobs;i_obs++){
                 memcpy(name,obs->obs_name[i_obs],6);
                 printf("%s  \t| %.4e \t| %.4e \t| %.4e \t|\n",name,obs->mean[i_obs],obs->var[i_obs],obs->err[i_obs]);
             }
-            int isweep = placeholder->isweep+1;
-            int nsweep = placeholder->nsweep;
-            double ratio = (double)isweep/nsweep*100;
             printf("|<-------------------%.2lf------------------->| %d/%d \n",ratio,isweep,nsweep);
             printf("===========================================================================\n");
+     }
+    else if(mode==1){
+            sprintf(filename,"%s.out",prefix);
+            FILE* outfile = fopen(filename,"w");
+            
+            fprintf(outfile,"Measurement ...\n");
+            fprintf(outfile,"inverse temperature \t: %lf\n",placeholder->beta);
+            fprintf(outfile,"length of sequence \t: %d \nnumber of operator \t: %d\n",placeholder->ops->length,placeholder->ops->noo);
+            fprintf(outfile,"obs name  \t| mean   \t| var    \t| err    \t|\n");
+            for(int i_obs=0;i_obs<obs->nobs;i_obs++){
+                memcpy(name,obs->obs_name[i_obs],6);
+                fprintf(outfile,"%s  \t| %.4e \t| %.4e \t| %.4e \t|\n",name,obs->mean[i_obs],obs->var[i_obs],obs->err[i_obs]);
+            }
+            fprintf(outfile,"|<-------------------%.2lf------------------->| %d/%d \n",ratio,isweep,nsweep);
+            fprintf(outfile,"===========================================================================\n");
+            fclose(outfile);
+    }
+    else if(mode==2){
+        OutputHTML(obs,placeholder,prefix);
     }
 }
 

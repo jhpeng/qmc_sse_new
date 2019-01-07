@@ -129,7 +129,7 @@ typedef struct SEPlaceHolder{
     OperatorLoop* opl;
 } SEPlaceHolder;
 
-typedef void measurement(double*, double*, double*, SEPlaceHolder*, int);
+typedef double measurement(SEPlaceHolder*, void* args);
 
 typedef struct Observable{
     int nobs;
@@ -140,6 +140,7 @@ typedef struct Observable{
     time_t end;
     char** obs_name;
     measurement** measure;
+    void** args;
     DoubleSequence* data;
     double* mean;
     double* var;
