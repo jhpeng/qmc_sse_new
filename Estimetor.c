@@ -109,6 +109,15 @@ void ObservableShow(
 
     if(mode==0){
             printf("Measurement ...\n");
+            if(placeholder->lconf->dims==1){
+                printf("the shape of lattice \t: [%d]\n",placeholder->lconf->shape[0]);
+            }
+            else if(placeholder->lconf->dims==2){
+                printf("the shape of lattice \t: [%d,%d]\n",placeholder->lconf->shape[0],placeholder->lconf->shape[1]);
+            }
+            else if(placeholder->lconf->dims==3){
+                printf("the shape of lattice \t: [%d,%d,%d]\n",placeholder->lconf->shape[0],placeholder->lconf->shape[1],placeholder->lconf->shape[2]);
+            }
             printf("inverse temperature \t: %lf\n",placeholder->beta);
             printf("length of sequence \t: %d \nnumber of operator \t: %d\n",placeholder->ops->length,placeholder->ops->noo);
             printf("obs name  \t| mean   \t| var    \t| err    \t|\n");
@@ -124,6 +133,15 @@ void ObservableShow(
             FILE* outfile = fopen(filename,"w");
             
             fprintf(outfile,"Measurement ...\n");
+            if(placeholder->lconf->dims==1){
+                fprintf(outfile,"the shape of lattice \t: [%d]\n",placeholder->lconf->shape[0]);
+            }
+            else if(placeholder->lconf->dims==2){
+                fprintf(outfile,"the shape of lattice \t: [%d,%d]\n",placeholder->lconf->shape[0],placeholder->lconf->shape[1]);
+            }
+            else if(placeholder->lconf->dims==3){
+                fprintf(outfile,"the shape of lattice \t: [%d,%d,%d]\n",placeholder->lconf->shape[0],placeholder->lconf->shape[1],placeholder->lconf->shape[2]);
+            }
             fprintf(outfile,"inverse temperature \t: %lf\n",placeholder->beta);
             fprintf(outfile,"length of sequence \t: %d \nnumber of operator \t: %d\n",placeholder->ops->length,placeholder->ops->noo);
             fprintf(outfile,"obs name  \t| mean   \t| var    \t| err    \t|\n");

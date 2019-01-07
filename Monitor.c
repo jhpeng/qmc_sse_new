@@ -40,6 +40,15 @@ void OutputHTML(Observable* obs, SEPlaceHolder* placeholder, char* prefix)
     fprintf(file,"</head>\n");
     fprintf(file,"<body>\n");
     fprintf(file,"\n");
+            if(placeholder->lconf->dims==1){
+                fprintf(file,"<h3>the shape of lattice \t: [%d]</h3>\n",placeholder->lconf->shape[0]);
+            }
+            else if(placeholder->lconf->dims==2){
+                fprintf(file,"<h3>the shape of lattice \t: [%d,%d]</h3>\n",placeholder->lconf->shape[0],placeholder->lconf->shape[1]);
+            }
+            else if(placeholder->lconf->dims==3){
+                fprintf(file,"<h3>the shape of lattice \t: [%d,%d,%d]</h3>\n",placeholder->lconf->shape[0],placeholder->lconf->shape[1],placeholder->lconf->shape[2]);
+            }
     fprintf(file,"<h3>inverse temperature \t: %lf</h3>\n",placeholder->beta);
     fprintf(file,"<h3>length of sequence \t: %d</h3>\n",placeholder->ops->length);
     fprintf(file,"<h3>number of operator \t: %d</h3>\n",placeholder->ops->noo);

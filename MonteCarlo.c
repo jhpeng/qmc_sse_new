@@ -92,19 +92,15 @@ void MCFlipUpdate(SEPlaceHolder* placeholder)
     }
 }
 
-#if 1
-int main()
+void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 {
     int ndiff=2,length=50;
-    int dims=2,shape[2]={32,32};
-    int nsweep=1000000,seed=933927;
-    int cutoff=20000;
-    double beta=64;
+    int dims=2;
     double max_err=1.e-4;
     double buffer=1.3;
     char prefix[128];
 
-    sprintf(prefix,"data/shape_%d_%d_beta_%.1f",shape[0],shape[1],beta);
+    sprintf(prefix,"data/isotropy_shape_%d_%d_beta_%.1f",shape[0],shape[1],beta);
 
     SEPlaceHolder* placeholder = CreateSEPlaceHolder();
     SEPlaceHolderSetLattice(placeholder,mapping_2d,shape,dims,0);
@@ -119,7 +115,7 @@ int main()
     MCInitializeLatticeConf(placeholder);
 
     int nobs=4;
-    int nave=1000000;
+    int nave=nsweep;
     Observable *obs = CreateObservable(nobs,nave);
     ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
     ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
@@ -142,12 +138,8 @@ int main()
         ObservableDoMeasurement(obs,placeholder);
         if((j+1)%10000==0){
             //ObservableShow(obs,placeholder,NULL,0);
-            ObservableShow(obs,placeholder,prefix,1);
+            //ObservableShow(obs,placeholder,prefix,1);
             ObservableShow(obs,placeholder,prefix,2);
-#if 0
-            for(int i=0;i<length;++i) printf("%d ",placeholder->ops->sequence->data[i]);
-            printf("\n");
-#endif
         }
 
         SEPlaceHolderLengthMonitor(placeholder, buffer);
@@ -156,5 +148,20 @@ int main()
     }
 
     DestroySEPlaceHolder(placeholder);
+}
+
+#if 1
+int main()
+{
+    int shape[2]={8,8};
+    double beta=16;
+    int nsweep=1000000,cutoff=20000;
+    int seed=290318;
+
+    for(double i=0.5;i<2.5;i=i+0.5){
+        beta = i*shape[0];
+        seed = seed/shape[0]*i;
+        MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
+    }
 }
 #endif
