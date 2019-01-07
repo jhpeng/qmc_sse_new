@@ -153,12 +153,18 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 }
 
 #if 1
-int main()
+int main(int argn, char *argv[])
 {
-    int shape[2]={16,16};
+    int shape[2]={8,8};
     double beta=16;
     int nsweep=1000000,cutoff=20000;
     int seed=290318;
+
+    int i;
+    for(i=0;i<argn;i++){
+        if(i==0) shape[0] = atoi(argv[1]);
+        else if(i==1) shape[1] = atoi(argv[2]);
+    }
 
     for(double i=0.5;i<2.5;i=i+0.5){
         beta = i*shape[0];

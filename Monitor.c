@@ -40,6 +40,7 @@ void OutputHTML(Observable* obs, SEPlaceHolder* placeholder, char* prefix)
     fprintf(file,"<head>\n");
     SetHTMLStyle(file);
     fprintf(file,"</head>\n");
+    fprintf(file,"<meta http-equiv=\"refresh\" content=\"5\" />");
     fprintf(file,"<body>\n");
     fprintf(file,"\n");
             if(placeholder->lconf->dims==1){
