@@ -102,6 +102,8 @@ void ObservableShow(
     double ratio = (double)isweep/nsweep*100;
     char filename[128];
     char name[]={"         "};
+    obs->end=clock();
+    double dtime = difftime(obs->end,obs->start)/CLOCKS_PER_SEC;
     MeanAverage(obs);
     //if model=0 : std output
     //if model=1 : output a text file
@@ -125,7 +127,7 @@ void ObservableShow(
                 memcpy(name,obs->obs_name[i_obs],6);
                 printf("%s  \t| %.4e \t| %.4e \t| %.4e \t|\n",name,obs->mean[i_obs],obs->var[i_obs],obs->err[i_obs]);
             }
-            printf("|<-------------------%.2lf------------------->| %d/%d \n",ratio,isweep,nsweep);
+            printf("|<-------------------%.2lf------------------->| %d/%d time : %.1lf(s) \n",ratio,isweep,nsweep,dtime);
             printf("===========================================================================\n");
      }
     else if(mode==1){
@@ -149,7 +151,7 @@ void ObservableShow(
                 memcpy(name,obs->obs_name[i_obs],6);
                 fprintf(outfile,"%s  \t| %.4e \t| %.4e \t| %.4e \t|\n",name,obs->mean[i_obs],obs->var[i_obs],obs->err[i_obs]);
             }
-            fprintf(outfile,"|<-------------------%.2lf------------------->| %d/%d \n",ratio,isweep,nsweep);
+            fprintf(outfile,"|<-------------------%.2lf------------------->| %d/%d time : %.1lf(s) \n",ratio,isweep,nsweep,dtime);
             fprintf(outfile,"===========================================================================\n");
             fclose(outfile);
     }
@@ -229,3 +231,88 @@ double ObservableStiffnessX(
 
     return winding*winding/placeholder->lconf->shape[0]/placeholder->lconf->shape[0]/beta;
 }
+
+double ObservableAntiferroOrder1(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    int i,j,id,p,bond;
+    int left,right;
+    int nsite  = placeholder->lconf->nsite;
+    int length = placeholder->ops->length;
+    double mz=0;
+    double m1=0;
+
+    for(i=0;i<nsite;++i)placeholder->lconf->sigmap->data[i]=placeholder->lconf->sigma0->data[i];
+
+    if(placeholder->lconf->dims==2){
+        int xlen = placeholder->lconf->shape[0];
+        mz=0;
+        for(id=0;id<nsite;++id){
+            i = id/xlen;
+            j = id%xlen; 
+            mz+= (((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[id];
+        }
+        for(p=0;p<length;++p){
+            m1+=fabs(mz);
+            if(placeholder->ops->sequence->data[p]%2==1){
+                bond = placeholder->ops->sequence->data[p]/2;
+                LatticeConfApplyMapping(placeholder->lconf,bond);
+                left  = placeholder->lconf->left;
+                right = placeholder->lconf->right;
+                i = left/xlen;
+                j = left%xlen;
+                mz+=-2*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
+                placeholder->lconf->sigmap->data[left]*=-1;
+                placeholder->lconf->sigmap->data[right]*=-1;
+            }
+        }
+    }
+
+    m1 = m1/length/nsite*0.5;
+
+    return m1;
+}
+
+double ObservableAntiferroOrder2(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    int i,j,id,p,bond;
+    int left,right;
+    int nsite  = placeholder->lconf->nsite;
+    int length = placeholder->ops->length;
+    double mz=0;
+    double m2=0;
+
+    for(i=0;i<nsite;++i)placeholder->lconf->sigmap->data[i]=placeholder->lconf->sigma0->data[i];
+
+    if(placeholder->lconf->dims==2){
+        int xlen = placeholder->lconf->shape[0];
+        mz=0;
+        for(id=0;id<nsite;++id){
+            i = id/xlen;
+            j = id%xlen; 
+            mz+= (((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[id];
+        }
+        for(p=0;p<length;++p){
+            m2+=fabs(mz*mz);
+            if(placeholder->ops->sequence->data[p]%2==1){
+                bond = placeholder->ops->sequence->data[p]/2;
+                LatticeConfApplyMapping(placeholder->lconf,bond);
+                left  = placeholder->lconf->left;
+                right = placeholder->lconf->right;
+                i = left/xlen;
+                j = left%xlen;
+                mz+=-2*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
+                placeholder->lconf->sigmap->data[left]*=-1;
+                placeholder->lconf->sigmap->data[right]*=-1;
+            }
+        }
+    }
+
+    m2 = m2/length/nsite/nsite*0.25;
+
+    return m2;
+}
+

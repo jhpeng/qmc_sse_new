@@ -31,6 +31,8 @@ void OutputHTML(Observable* obs, SEPlaceHolder* placeholder, char* prefix)
     int nsweep = placeholder->nsweep;
     double ratio = (double)isweep/nsweep*100;
     char filename[128];
+    obs->end=clock();
+    double dtime = difftime(obs->end,obs->start)/CLOCKS_PER_SEC;
     sprintf(filename,"%s.html",prefix);
     FILE* file = fopen(filename,"w");
     fprintf(file,"<!DOCTYPE html>\n");
@@ -69,7 +71,7 @@ void OutputHTML(Observable* obs, SEPlaceHolder* placeholder, char* prefix)
         fprintf(file,"\t</tr>\n");
     }
     fprintf(file,"</table>\n");
-    fprintf(file,"<h3>|<----------------------%.2lf--------------------->| %d/%d</h3>\n",ratio,isweep,nsweep);
+    fprintf(file,"<h3>|<----------------------%.2lf--------------------->| %d/%d time : %.1lf(s) </h3>\n",ratio,isweep,nsweep,dtime);
     fprintf(file,"</body>\n");
     fprintf(file,"</html>\n");
     fclose(file);

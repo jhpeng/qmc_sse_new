@@ -43,6 +43,14 @@ double ObservableStiffnessX(
                     SEPlaceHolder* placeholder,
                     void* args);
 
+double ObservableAntiferroOrder1(
+                    SEPlaceHolder* placeholder,
+                    void* args);
+
+double ObservableAntiferroOrder2(
+                    SEPlaceHolder* placeholder,
+                    void* args);
+
 
 
 #endif

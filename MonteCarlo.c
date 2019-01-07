@@ -114,13 +114,15 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 #endif
     MCInitializeLatticeConf(placeholder);
 
-    int nobs=4;
+    int nobs=6;
     int nave=nsweep;
     Observable *obs = CreateObservable(nobs,nave);
     ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
     ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
     ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
     ObservableSetMeasurement(obs,ObservableStiffnessX,"stif_x",NULL);
+    ObservableSetMeasurement(obs,ObservableAntiferroOrder1,"mz_1",NULL);
+    ObservableSetMeasurement(obs,ObservableAntiferroOrder2,"mz_2",NULL);
 
     int j=0;
     for(j=0;j<cutoff;j++){
@@ -153,7 +155,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 #if 1
 int main()
 {
-    int shape[2]={8,8};
+    int shape[2]={16,16};
     double beta=16;
     int nsweep=1000000,cutoff=20000;
     int seed=290318;
