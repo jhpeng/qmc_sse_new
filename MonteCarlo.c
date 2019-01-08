@@ -100,7 +100,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
     double buffer=1.3;
     char prefix[128];
 
-    sprintf(prefix,"data/isotropy_shape_%d_%d_beta_%.1f",shape[0],shape[1],beta);
+    sprintf(prefix,"data/isotropy_shape_%d_%d_beta_%.1f_0",shape[0],shape[1],beta);
 
     int Nb=shape[0]*shape[1]*dims;
     CreateMappingList(mapping_2d,shape,Nb);
@@ -117,7 +117,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 #endif
     MCInitializeLatticeConf(placeholder);
 
-    int nobs=6;
+    int nobs=7;
     int nave=nsweep;
     Observable *obs = CreateObservable(nobs,nave);
     ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
@@ -126,6 +126,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
     ObservableSetMeasurement(obs,ObservableStiffnessX,"stif_x",NULL);
     ObservableSetMeasurement(obs,ObservableAntiferroOrder1,"mz_1",NULL);
     ObservableSetMeasurement(obs,ObservableAntiferroOrder2,"mz_2",NULL);
+    ObservableSetMeasurement(obs,ObservableAntiferroOrder4,"mz_4",NULL);
 
     int j=0;
     for(j=0;j<cutoff;j++){
@@ -181,10 +182,10 @@ int main(int argn, char *argv[])
 #if 1
 int main(int argn, char *argv[])
 {
-    int shape[2]={48,48};
-    double beta=512;
+    int shape[2]={32,32};
+    double beta=16;
     int nsweep=1000000,cutoff=20000;
-    int seed=290318;
+    int seed=2318;
 
     MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
 }

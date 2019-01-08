@@ -296,7 +296,7 @@ double ObservableAntiferroOrder2(
             mz+= (((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[id];
         }
         for(p=0;p<length;++p){
-            m2+=fabs(mz*mz);
+            m2+=mz*mz;
             if(placeholder->ops->sequence->data[p]%2==1){
                 bond = placeholder->ops->sequence->data[p]/2;
                 LatticeConfApplyMapping(placeholder->lconf,bond);
@@ -314,5 +314,47 @@ double ObservableAntiferroOrder2(
     m2 = m2/length/nsite/nsite*0.25;
 
     return m2;
+}
+
+double ObservableAntiferroOrder4(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    int i,j,id,p,bond;
+    int left,right;
+    int nsite  = placeholder->lconf->nsite;
+    int length = placeholder->ops->length;
+    double mz=0;
+    double m4=0;
+
+    for(i=0;i<nsite;++i)placeholder->lconf->sigmap->data[i]=placeholder->lconf->sigma0->data[i];
+
+    if(placeholder->lconf->dims==2){
+        int xlen = placeholder->lconf->shape[0];
+        mz=0;
+        for(id=0;id<nsite;++id){
+            i = id/xlen;
+            j = id%xlen; 
+            mz+= (((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[id];
+        }
+        for(p=0;p<length;++p){
+            m4+=mz*mz*mz*mz;
+            if(placeholder->ops->sequence->data[p]%2==1){
+                bond = placeholder->ops->sequence->data[p]/2;
+                LatticeConfApplyMapping(placeholder->lconf,bond);
+                left  = placeholder->lconf->left;
+                right = placeholder->lconf->right;
+                i = left/xlen;
+                j = left%xlen;
+                mz+=-2*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
+                placeholder->lconf->sigmap->data[left]*=-1;
+                placeholder->lconf->sigmap->data[right]*=-1;
+            }
+        }
+    }
+
+    m4 = m4/length/nsite/nsite/nsite/nsite*0.0625;
+
+    return m4;
 }
 

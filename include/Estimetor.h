@@ -51,6 +51,10 @@ double ObservableAntiferroOrder2(
                     SEPlaceHolder* placeholder,
                     void* args);
 
+double ObservableAntiferroOrder4(
+                    SEPlaceHolder* placeholder,
+                    void* args);
+
 
 
 #endif
