@@ -102,8 +102,11 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 
     sprintf(prefix,"data/isotropy_shape_%d_%d_beta_%.1f",shape[0],shape[1],beta);
 
+    int Nb=shape[0]*shape[1]*dims;
+    CreateMappingList(mapping_2d,shape,Nb);
+
     SEPlaceHolder* placeholder = CreateSEPlaceHolder();
-    SEPlaceHolderSetLattice(placeholder,mapping_2d,shape,dims,0);
+    SEPlaceHolderSetLattice(placeholder,mapping_list,shape,dims,0);
     SEPlaceHolderSetLength(placeholder,length,ndiff);
     SEPlaceHolderSetRandomSeed(placeholder, seed);
     SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
@@ -150,9 +153,10 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
     }
 
     DestroySEPlaceHolder(placeholder);
+    DestroyMappingList();
 }
 
-#if 1
+#if 0
 int main(int argn, char *argv[])
 {
     int shape[2]={8,8};
@@ -171,5 +175,17 @@ int main(int argn, char *argv[])
         seed = seed/shape[0]*i;
         MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
     }
+}
+#endif
+
+#if 1
+int main(int argn, char *argv[])
+{
+    int shape[2]={48,48};
+    double beta=512;
+    int nsweep=1000000,cutoff=20000;
+    int seed=290318;
+
+    MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
 }
 #endif

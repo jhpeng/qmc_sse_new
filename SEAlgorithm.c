@@ -177,6 +177,60 @@ void mapping_1d(int* left, int* right, const int* shape, int bond)
     }
 }
 
+static int* BOND2LEFT;
+static int* BOND2RIGHT;
+
+void CreateMappingList(bond2sigma* mapping, const int* shape, int Nb)
+{
+    int left,right;
+    BOND2LEFT =(int*)malloc(Nb*sizeof(int));
+    BOND2RIGHT=(int*)malloc(Nb*sizeof(int));
+    for(int i=0;i<Nb;++i){
+        mapping(&left,&right,shape,i);
+        BOND2LEFT[i] =left;
+        BOND2RIGHT[i]=right;
+    }
+}
+
+void DestroyMappingList()
+{
+    free(BOND2LEFT);
+    free(BOND2RIGHT);
+}
+
+void mapping_list(int* left, int* right, const int* shape, int bond)
+{
+    *left  = BOND2LEFT[bond];
+    *right = BOND2RIGHT[bond];
+}
+
+#if 1
+#define FAST_MAPPING_2D
+#endif
+#ifdef FAST_MAPPING_2D
+void mapping_2d(int* left, int* right, const int* shape, int bond)
+{
+    int i,j,k,t;
+    int x=shape[0];
+    int y=shape[1];
+    int nsite=x*y;
+
+    t=bond/nsite;
+    k=bond%nsite;
+    *left=k;
+
+    i= k%x;
+    j= k/x;
+
+
+    i+=t^1;
+    j+=t;
+    i=i%x;
+    j=j%y;
+    *right=j*x+i;
+}
+#endif
+#ifndef FAST_MAPPING_2D
 void mapping_2d(int *first, int *second, const int *size, int bond)
 {
     int M=size[0];
@@ -211,6 +265,7 @@ void mapping_2d(int *first, int *second, const int *size, int bond)
         exit(-1);
     }
 }
+#endif
 
 void SEPlaceHolderSetLattice(
                     SEPlaceHolder* placeholder, 

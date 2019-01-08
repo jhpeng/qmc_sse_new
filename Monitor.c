@@ -65,10 +65,10 @@ void OutputHTML(Observable* obs, SEPlaceHolder* placeholder, char* prefix)
 
     for(int i_obs=0;i_obs<obs->nobs;i_obs++){
         fprintf(file,"\t<tr>\n");
-        fprintf(file,"\t\t<td>%s</td>\n",obs->obs_name[i_obs]);
-        fprintf(file,"\t\t<td>%.4e</td>\n",obs->mean[i_obs]);
-        fprintf(file,"\t\t<td>%.4e</td>\n",obs->var[i_obs]);
-        fprintf(file,"\t\t<td>%.4e</td>\n",obs->err[i_obs]);
+        fprintf(file,"\t\t<td>%s</td>",obs->obs_name[i_obs]);
+        fprintf(file,"<td>%.4e</td>",obs->mean[i_obs]);
+        fprintf(file,"<td>%.4e</td>",obs->var[i_obs]);
+        fprintf(file,"<td>%.4e</td>\n",obs->err[i_obs]);
         fprintf(file,"\t</tr>\n");
     }
     fprintf(file,"</table>\n");

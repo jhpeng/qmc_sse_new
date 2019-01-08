@@ -28,6 +28,12 @@ void SELoopUpdate(
                     OperatorSequence* ops,
                     OperatorLoop* opl);
 
+void CreateMappingList(bond2sigma* mapping, const int* shape, int Nb);
+
+void DestroyMappingList();
+
+void mapping_list(int* left, int* right, const int* shape, int bond);
+
 void mapping_1d(int* left, int* right, const int* shape, int bond);
 
 void mapping_2d(int *first, int *second, const int *size, int bond);
