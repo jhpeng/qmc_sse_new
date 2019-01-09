@@ -268,16 +268,18 @@ double ObservableAntiferroOrder1(
         }
         for(p=0;p<length;++p){
             m1+=fabs(mz);
-            if(placeholder->ops->sequence->data[p]%2==1){
+            if(placeholder->ops->sequence->data[p]!=-1){
+            if((placeholder->ops->sequence->data[p]%2)==1){
                 bond = placeholder->ops->sequence->data[p]/2;
                 LatticeConfApplyMapping(placeholder->lconf,bond);
                 left  = placeholder->lconf->left;
                 right = placeholder->lconf->right;
                 i = left/xlen;
                 j = left%xlen;
-                mz+=-2*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
+                mz-=4*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
                 placeholder->lconf->sigmap->data[left]*=-1;
                 placeholder->lconf->sigmap->data[right]*=-1;
+            }
             }
         }
     }
@@ -310,16 +312,18 @@ double ObservableAntiferroOrder2(
         }
         for(p=0;p<length;++p){
             m2+=mz*mz;
-            if(placeholder->ops->sequence->data[p]%2==1){
+            if(placeholder->ops->sequence->data[p]!=-1){
+            if((placeholder->ops->sequence->data[p]%2)==1){
                 bond = placeholder->ops->sequence->data[p]/2;
                 LatticeConfApplyMapping(placeholder->lconf,bond);
                 left  = placeholder->lconf->left;
                 right = placeholder->lconf->right;
                 i = left/xlen;
                 j = left%xlen;
-                mz+=-2*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
+                mz-=4*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
                 placeholder->lconf->sigmap->data[left]*=-1;
                 placeholder->lconf->sigmap->data[right]*=-1;
+            }
             }
         }
     }
@@ -352,16 +356,18 @@ double ObservableAntiferroOrder4(
         }
         for(p=0;p<length;++p){
             m4+=mz*mz*mz*mz;
-            if(placeholder->ops->sequence->data[p]%2==1){
+            if(placeholder->ops->sequence->data[p]!=-1){
+            if((placeholder->ops->sequence->data[p]%2)==1){
                 bond = placeholder->ops->sequence->data[p]/2;
                 LatticeConfApplyMapping(placeholder->lconf,bond);
                 left  = placeholder->lconf->left;
                 right = placeholder->lconf->right;
                 i = left/xlen;
                 j = left%xlen;
-                mz+=-2*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
+                mz-=4*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
                 placeholder->lconf->sigmap->data[left]*=-1;
                 placeholder->lconf->sigmap->data[right]*=-1;
+            }
             }
         }
     }
@@ -370,4 +376,3 @@ double ObservableAntiferroOrder4(
 
     return m4;
 }
-
