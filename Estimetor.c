@@ -158,6 +158,20 @@ void ObservableShow(
     else if(mode==2){
         OutputHTML(obs,placeholder,prefix);
     }
+    else if(mode==3){
+        if(isweep==nsweep){
+            sprintf(filename,"%s.data",prefix);
+            FILE* outfile = fopen(filename,"w");
+            int i_obs,j;
+            for(j=0;j<obs->nave;++j){
+                for(i_obs=0;i_obs<obs->nobs;++i_obs){
+                    fprintf(outfile,"%e ",obs->data->data[j*obs->nobs+i_obs]);
+                }
+                fprintf(outfile,"\n");
+            }
+            fclose(outfile);
+        }
+    }
 }
 
 double ObservableSpecificEnergy(
@@ -205,14 +219,13 @@ double ObservableStiffnessX(
                     SEPlaceHolder* placeholder,
                     void* args)
 {
-    int i,type,bond,p,left,right,length=placeholder->ops->length;
+    int type,bond,p,left,right,length=placeholder->ops->length;
     int ndiff=placeholder->ops->ndiff;
     int nsite=placeholder->lconf->nsite;
     double winding=0;
     double beta = placeholder->beta;
-    for(i=0;i<nsite;++i){
-        placeholder->lconf->sigmap->data[i] = placeholder->lconf->sigma0->data[i];
-    }
+
+    LatticeConfSynchronizeSigma(placeholder->lconf);
 
     for(p=0;p<length;++p){
         type = placeholder->ops->sequence->data[p]%ndiff;
@@ -243,7 +256,7 @@ double ObservableAntiferroOrder1(
     double mz=0;
     double m1=0;
 
-    for(i=0;i<nsite;++i)placeholder->lconf->sigmap->data[i]=placeholder->lconf->sigma0->data[i];
+    LatticeConfSynchronizeSigma(placeholder->lconf);
 
     if(placeholder->lconf->dims==2){
         int xlen = placeholder->lconf->shape[0];
@@ -285,7 +298,7 @@ double ObservableAntiferroOrder2(
     double mz=0;
     double m2=0;
 
-    for(i=0;i<nsite;++i)placeholder->lconf->sigmap->data[i]=placeholder->lconf->sigma0->data[i];
+    LatticeConfSynchronizeSigma(placeholder->lconf);
 
     if(placeholder->lconf->dims==2){
         int xlen = placeholder->lconf->shape[0];
@@ -327,7 +340,7 @@ double ObservableAntiferroOrder4(
     double mz=0;
     double m4=0;
 
-    for(i=0;i<nsite;++i)placeholder->lconf->sigmap->data[i]=placeholder->lconf->sigma0->data[i];
+    LatticeConfSynchronizeSigma(placeholder->lconf);
 
     if(placeholder->lconf->dims==2){
         int xlen = placeholder->lconf->shape[0];
