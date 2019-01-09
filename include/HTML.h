@@ -4,8 +4,8 @@
 #include "DataStruct.h"
 #include "Estimetor.h"
 
-#ifndef MONITOR_H
-#define MONITOR_H
+#ifndef HTML_H
+#define HTML_H
 
 void OutputHTML(Observable* obs, SEPlaceHolder* placeholder, char* prefix);
 #endif
