@@ -6,7 +6,7 @@
 
 #include "DataStruct.h"
 #include "SEAlgorithm.h"
-#include "Monitor.h"
+#include "HTML.h"
 
 Observable* CreateObservable(int nobs, int nave)
 {

@@ -92,6 +92,39 @@ void MCFlipUpdate(SEPlaceHolder* placeholder)
     }
 }
 
+int MCCheckInnerProduct(SEPlaceHolder* placeholder)
+{
+    int left,right,i,p,bond,type;
+    int noo=placeholder->ops->noo;
+    int ndiff=placeholder->ops->ndiff;
+    int nsite=placeholder->lconf->nsite;
+
+    for(i=0;i<nsite;++i) placeholder->lconf->sigmap->data[i]=placeholder->lconf->sigma0->data[i];
+
+    for(i=0;i<noo;++i){
+        p=placeholder->ops->sort->data[i];
+        bond=placeholder->ops->sequence->data[p]/ndiff;
+        type=placeholder->ops->sequence->data[p]%ndiff;
+        if(type==1){
+            LatticeConfApplyMapping(placeholder->lconf,bond);
+            left =placeholder->lconf->left;
+            right=placeholder->lconf->right;
+            placeholder->lconf->sigmap->data[left] *=-1;
+            placeholder->lconf->sigmap->data[right]*=-1;
+        }
+    }
+
+    int check=0;
+    for(i=0;i<nsite;++i) {
+        if(placeholder->lconf->sigmap->data[i]!=placeholder->lconf->sigma0->data[i]){
+            check=1;
+            return check;
+        }
+    }
+
+    return check;
+}
+
 void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 {
     int ndiff=2,length=50;
@@ -133,6 +166,16 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
         MCDiagonalOperatorUpdateIsotropy(placeholder);
         MCOffDiagOperatorUpdate(placeholder);
         MCFlipUpdate(placeholder);
+#if 0
+#define CHECK_INNER_PRODUCT
+#endif
+#ifdef CHECK_INNER_PRODUCT
+        int check = MCCheckInnerProduct(placeholder);
+        if(check) {
+            printf("faile passing the check inner product!\n");
+            exit(-1);
+        }
+#endif
         SEPlaceHolderLengthMonitor(placeholder, buffer);
     }
     j=0;
@@ -147,6 +190,13 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
             //ObservableShow(obs,placeholder,prefix,1);
             ObservableShow(obs,placeholder,prefix,2);
         }
+#ifdef CHECK_INNER_PRODUCT
+        int check = MCCheckInnerProduct(placeholder);
+        if(check) {
+            printf("faile passing the check inner product!\n");
+            exit(-1);
+        }
+#endif
 
         SEPlaceHolderLengthMonitor(placeholder, buffer);
         placeholder->isweep++;
@@ -182,8 +232,8 @@ int main(int argn, char *argv[])
 #if 1
 int main(int argn, char *argv[])
 {
-    int shape[2]={32,32};
-    double beta=16;
+    int shape[2]={16,16};
+    double beta=8;
     int nsweep=1000000,cutoff=20000;
     int seed=2318;
 
