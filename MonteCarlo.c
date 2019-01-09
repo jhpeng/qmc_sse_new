@@ -99,7 +99,7 @@ int MCCheckInnerProduct(SEPlaceHolder* placeholder)
     int ndiff=placeholder->ops->ndiff;
     int nsite=placeholder->lconf->nsite;
 
-    for(i=0;i<nsite;++i) placeholder->lconf->sigmap->data[i]=placeholder->lconf->sigma0->data[i];
+    LatticeConfSynchronizeSigma(placeholder->lconf);
 
     for(i=0;i<noo;++i){
         p=placeholder->ops->sort->data[i];
@@ -133,7 +133,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
     double buffer=1.3;
     char prefix[128];
 
-    sprintf(prefix,"data/isotropy_shape_%d_%d_beta_%.1f_0",shape[0],shape[1],beta);
+    sprintf(prefix,"data/isotropy_shape_%d_%d_beta_%.1f_1",shape[0],shape[1],beta);
 
     int Nb=shape[0]*shape[1]*dims;
     CreateMappingList(mapping_2d,shape,Nb);
@@ -189,6 +189,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
             //ObservableShow(obs,placeholder,NULL,0);
             //ObservableShow(obs,placeholder,prefix,1);
             ObservableShow(obs,placeholder,prefix,2);
+            ObservableShow(obs,placeholder,prefix,3);
         }
 #ifdef CHECK_INNER_PRODUCT
         int check = MCCheckInnerProduct(placeholder);
@@ -232,8 +233,8 @@ int main(int argn, char *argv[])
 #if 1
 int main(int argn, char *argv[])
 {
-    int shape[2]={16,16};
-    double beta=8;
+    int shape[2]={8,8};
+    double beta=4;
     int nsweep=1000000,cutoff=20000;
     int seed=2318;
 
