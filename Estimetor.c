@@ -376,3 +376,87 @@ double ObservableAntiferroOrder4(
 
     return m4;
 }
+
+static double obs_m1,obs_m2,obs_m4,obs_stifx;
+void ObservableFastPreCal(
+                    SEPlaceHolder* placeholder)
+{
+    int i,j,id,p,bond,type;
+    int left,right;
+    int nsite  = placeholder->lconf->nsite;
+    int length = placeholder->ops->length;
+    int ndiff  = placeholder->ops->ndiff;
+    double beta = placeholder->beta;
+    double mz=0;
+    double m1=0;
+    double m2=0;
+    double m4=0;
+    double winding=0;
+
+    LatticeConfSynchronizeSigma(placeholder->lconf);
+
+    if(placeholder->lconf->dims==2){
+        int xlen = placeholder->lconf->shape[0];
+        mz=0;
+        for(id=0;id<nsite;++id){
+            i = id/xlen;
+            j = id%xlen; 
+            mz+= (((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[id];
+        }
+        for(p=0;p<length;++p){
+            m1+=fabs(mz);
+            m2+=mz*mz;
+            m4+=mz*mz*mz*mz;
+            if(placeholder->ops->sequence->data[p]!=-1){
+                type = placeholder->ops->sequence->data[p]%ndiff;
+                if(type==1){
+                    bond = placeholder->ops->sequence->data[p]/ndiff;
+                    LatticeConfApplyMapping(placeholder->lconf,bond);
+                    left  = placeholder->lconf->left;
+                    right = placeholder->lconf->right;
+                    i = left/xlen;
+                    j = left%xlen;
+                    mz-=4*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
+                    if(bond<nsite){
+                        winding += placeholder->lconf->sigmap->data[left];
+                    }
+                    placeholder->lconf->sigmap->data[left]*=-1;
+                    placeholder->lconf->sigmap->data[right]*=-1;
+                }
+            }
+        }
+    }
+
+    obs_m1 = m1/length/nsite*0.5;
+    obs_m2 = m2/length/nsite/nsite*0.25;
+    obs_m4 = m4/length/nsite/nsite/nsite/nsite*0.0625;
+    obs_stifx = winding*winding/placeholder->lconf->shape[0]/placeholder->lconf->shape[0]/beta;
+}
+
+double ObservableFastAntiferroOrder1(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    return obs_m1;
+}
+
+double ObservableFastAntiferroOrder2(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    return obs_m2;
+}
+
+double ObservableFastAntiferroOrder4(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    return obs_m4;
+}
+
+double ObservableFastStiffnessX(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    return obs_stifx;
+}

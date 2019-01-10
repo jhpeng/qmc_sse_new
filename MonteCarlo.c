@@ -22,7 +22,7 @@ void MCDiagonalOperatorUpdateIsotropy(SEPlaceHolder* placeholder)
 {
     int length=placeholder->length;
     int ndiff=placeholder->ops->ndiff;
-    OperatorSequenceSort(placeholder->ops);
+    //OperatorSequenceSort(placeholder->ops);
     int noo=placeholder->ops->noo;
     int Nb=placeholder->lconf->Nb;
     int p,bond,left,right;
@@ -133,7 +133,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
     double buffer=1.3;
     char prefix[128];
 
-    sprintf(prefix,"data/isotropy_shape_%d_%d_beta_%.1f_1",shape[0],shape[1],beta);
+    sprintf(prefix,"data/isotropy_shape_%d_%d_beta_%.1f",shape[0],shape[1],beta);
 
     int Nb=shape[0]*shape[1]*dims;
     CreateMappingList(mapping_2d,shape,Nb);
@@ -156,11 +156,21 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
     ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
     ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
     ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+#if 1
+#define FAST_OBS
+#endif
+#ifndef FAST_OBS
     ObservableSetMeasurement(obs,ObservableStiffnessX,"stif_x",NULL);
     ObservableSetMeasurement(obs,ObservableAntiferroOrder1,"mz_1",NULL);
     ObservableSetMeasurement(obs,ObservableAntiferroOrder2,"mz_2",NULL);
     ObservableSetMeasurement(obs,ObservableAntiferroOrder4,"mz_4",NULL);
-
+#endif
+#ifdef FAST_OBS
+    ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+#endif
     int j=0;
     for(j=0;j<cutoff;j++){
         MCDiagonalOperatorUpdateIsotropy(placeholder);
@@ -184,6 +194,10 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
         MCDiagonalOperatorUpdateIsotropy(placeholder);
         MCOffDiagOperatorUpdate(placeholder);
         MCFlipUpdate(placeholder);
+
+#ifdef FAST_OBS
+        ObservableFastPreCal(placeholder);
+#endif
         ObservableDoMeasurement(obs,placeholder);
         if((j+1)%10000==0){
             //ObservableShow(obs,placeholder,NULL,0);
@@ -233,10 +247,18 @@ int main(int argn, char *argv[])
 #if 1
 int main(int argn, char *argv[])
 {
-    int shape[2]={8,8};
-    double beta=4;
+    int shape[2]={16,16};
+    double beta=16;
     int nsweep=1000000,cutoff=20000;
     int seed=2318;
+
+    int i;
+    for(i=0;i<argn;i++){
+        if(i==0) shape[0] = atoi(argv[1]);
+        else if(i==1) shape[1] = atoi(argv[2]);
+        else if(i==2) beta = atof(argv[3]);
+        else if(i==3) seed = atoi(argv[4]);
+    }
 
     MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
 }

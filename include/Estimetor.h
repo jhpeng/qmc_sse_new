@@ -55,6 +55,24 @@ double ObservableAntiferroOrder4(
                     SEPlaceHolder* placeholder,
                     void* args);
 
+void ObservableFastPreCal(
+                    SEPlaceHolder* placeholder);
+
+double ObservableFastAntiferroOrder1(
+                    SEPlaceHolder* placeholder,
+                    void* args);
+
+double ObservableFastAntiferroOrder2(
+                    SEPlaceHolder* placeholder,
+                    void* args);
+
+double ObservableFastAntiferroOrder4(
+                    SEPlaceHolder* placeholder,
+                    void* args);
+
+double ObservableFastStiffnessX(
+                    SEPlaceHolder* placeholder,
+                    void* args);
 
 
 #endif
