@@ -259,7 +259,9 @@ int main(int argn, char *argv[])
         if(i==0) shape[0] = atoi(argv[1]);
         else if(i==1) shape[1] = atoi(argv[2]);
         else if(i==2) beta = atof(argv[3]);
-        else if(i==3) seed = atoi(argv[4]);
+        else if(i==3) cutoff = atoi(argv[4]);
+        else if(i==4) nsweep = atoi(argv[5]);
+        else if(i==5) seed = atoi(argv[6]);
     }
 
     MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
