@@ -159,18 +159,18 @@ void ObservableShow(
         OutputHTML(obs,placeholder,prefix);
     }
     else if(mode==3){
-        if(isweep==nsweep){
-            sprintf(filename,"%s.data",prefix);
-            FILE* outfile = fopen(filename,"w");
-            int i_obs,j;
-            for(j=0;j<obs->nave;++j){
-                for(i_obs=0;i_obs<obs->nobs;++i_obs){
-                    fprintf(outfile,"%e ",obs->data->data[j*obs->nobs+i_obs]);
-                }
-                fprintf(outfile,"\n");
-            }
-            fclose(outfile);
+        sprintf(filename,"%s.data",prefix);
+        FILE* outfile = fopen(filename,"w");
+        int i_obs;
+        for(i_obs=0;i_obs<obs->nobs;++i_obs){
+            fprintf(outfile,"%e ",obs->mean[i_obs]);
         }
+        fprintf(outfile,"\n");
+        for(i_obs=0;i_obs<obs->nobs;++i_obs){
+            fprintf(outfile,"%e ",obs->err[i_obs]);
+        }
+        fprintf(outfile,"\n");
+        fclose(outfile);
     }
 }
 
