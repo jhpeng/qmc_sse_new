@@ -150,6 +150,24 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 #endif
     MCInitializeLatticeConf(placeholder);
 
+    int j=0;
+    for(j=0;j<cutoff;j++){
+        MCDiagonalOperatorUpdateIsotropy(placeholder);
+        MCOffDiagOperatorUpdate(placeholder);
+        MCFlipUpdate(placeholder);
+#if 0
+#define CHECK_INNER_PRODUCT
+#endif
+#ifdef CHECK_INNER_PRODUCT
+        int check = MCCheckInnerProduct(placeholder);
+        if(check) {
+            printf("faile passing the check inner product!\n");
+            exit(-1);
+        }
+#endif
+        SEPlaceHolderLengthMonitor(placeholder, buffer);
+    }
+
     int nobs=7;
     int nave=nsweep;
     Observable *obs = CreateObservable(nobs,nave);
@@ -171,23 +189,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
 #endif
-    int j=0;
-    for(j=0;j<cutoff;j++){
-        MCDiagonalOperatorUpdateIsotropy(placeholder);
-        MCOffDiagOperatorUpdate(placeholder);
-        MCFlipUpdate(placeholder);
-#if 0
-#define CHECK_INNER_PRODUCT
-#endif
-#ifdef CHECK_INNER_PRODUCT
-        int check = MCCheckInnerProduct(placeholder);
-        if(check) {
-            printf("faile passing the check inner product!\n");
-            exit(-1);
-        }
-#endif
-        SEPlaceHolderLengthMonitor(placeholder, buffer);
-    }
+
     j=0;
     placeholder->isweep=0;
     while(j<nsweep){
