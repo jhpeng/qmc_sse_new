@@ -25,6 +25,14 @@ void SetHTMLStyle(FILE* file)
     fprintf(file,"</style>\n");
 }
 
+static void sec2dhms(int* day, int* hr, int* min, double* sec, double second)
+{
+    *day = second/86400;
+    *hr  = (second - *day*86400)/3600;
+    *min = (second - *day*86400 - *hr*3600)/60;
+    *sec = second - *day*86400 - *hr*3600 - *min*60;
+}
+
 void OutputHTML(Observable* obs, SEPlaceHolder* placeholder, char* prefix)
 {
     int isweep = placeholder->isweep+1;
@@ -33,10 +41,9 @@ void OutputHTML(Observable* obs, SEPlaceHolder* placeholder, char* prefix)
     obs->end=clock();
     double dtime = difftime(obs->end,obs->start)/CLOCKS_PER_SEC;
     double rtime = dtime/ratio*(100-ratio);
-    int day = rtime/86400;
-    int hr  = (rtime - day*86400)/3600;
-    int min = (rtime - day*86400 - hr*3600)/60;
-    double s   = rtime - day*86400 - hr*3600 - min*60;
+    double ttime = dtime/ratio*100;
+    int day,hr,min;
+    double s;
     char filename[128];
     sprintf(filename,"%s.html",prefix);
     FILE* file = fopen(filename,"w");
@@ -78,7 +85,12 @@ void OutputHTML(Observable* obs, SEPlaceHolder* placeholder, char* prefix)
     }
     fprintf(file,"</table>\n");
     fprintf(file,"<h3>|<----------------------%.2lf--------------------->| %d/%d time : %.1lf(s) </h3>\n",ratio,isweep,nsweep,dtime);
+    sec2dhms(&day,&hr,&min,&s,dtime);
+    fprintf(file,"<h3>Passing   Time : %d days %d hr %d min %.2lf(s)</h3>\n",day,hr,min,s);
+    sec2dhms(&day,&hr,&min,&s,rtime);
     fprintf(file,"<h3>Remaining Time : %d days %d hr %d min %.2lf(s)</h3>\n",day,hr,min,s);
+    sec2dhms(&day,&hr,&min,&s,ttime);
+    fprintf(file,"<h3>Total     Time : %d days %d hr %d min %.2lf(s)</h3>\n",day,hr,min,s);
     fprintf(file,"</body>\n");
     fprintf(file,"</html>\n");
     fclose(file);
