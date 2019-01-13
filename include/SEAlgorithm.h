@@ -59,4 +59,6 @@ int SEPlaceHolderCheckSetting(SEPlaceHolder* placeholder);
 
 void SEPlaceHolderLengthMonitor(SEPlaceHolder* placeholder, double buffer);
 
+void SEPlaceHolderSetDisorder2D(SEPlaceHolder* placeholder, double J);
+
 #endif

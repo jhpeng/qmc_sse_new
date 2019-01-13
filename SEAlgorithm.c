@@ -354,8 +354,6 @@ void SEPlaceHolderSetError(SEPlaceHolder* placeholder, double max_err)
 int SEPlaceHolderCheckSetting(SEPlaceHolder* placeholder)
 {
     int check=1;
-    printf("-----------------\n");
-    printf("SEPlaceHolderCheckSetting : checking SEPlaceHolder...\n");
     if(placeholder->set_lattice^1){
         printf("SEPlaceHolderCheckSetting : please use SEPlaceHolderSetLattice\n");
         check=0;
@@ -386,9 +384,6 @@ int SEPlaceHolderCheckSetting(SEPlaceHolder* placeholder)
         check=0;
     }
 
-    printf("finished check SEPlaceHolder\n");
-    printf("-----------------\n");
-    
     return check;
 }
 
@@ -398,6 +393,44 @@ void SEPlaceHolderLengthMonitor(SEPlaceHolder* placeholder, double buffer)
     int ndiff=placeholder->ops->ndiff;
     if(noo*buffer>placeholder->length){
         SEPlaceHolderSetLength(placeholder,(int)(noo*buffer),ndiff);
+    }
+}
+
+void SEPlaceHolderSetDisorder2D(SEPlaceHolder* placeholder, double J)
+{
+    int Nb=placeholder->lconf->Nb;
+    int nsite=placeholder->lconf->nsite;
+    int bond,i,j;
+    if(placeholder->lconf->dims!=2){
+        printf("SEPlaceHolderSetDisorder2D : The dimension must be 2!\n");
+        exit(-1);
+    }
+    else if(Nb!=(2*nsite)){
+        printf("SEPlaceHolderSetDisorder2D : Nb must be 2*nsite!\n");
+        exit(-1);
+    }
+    else if((placeholder->lconf->shape[0]%4)!=0 && (placeholder->lconf->shape[0]%4)!=0){
+        printf("SEPlaceHolderSetDisorder2D : lx and ly must be multiple of 4!\n");
+        exit(-1);
+    }
+
+    for(bond=0;bond<nsite;++bond){
+        placeholder->lconf->J->data[bond]=1;
+        i = (bond%placeholder->lconf->shape[0])%4;
+        j = (bond/placeholder->lconf->shape[0])%4;
+        if(i==0 && j==0) placeholder->lconf->J->data[bond]=J;
+        else if(i==0 && j==1) placeholder->lconf->J->data[bond]=J;
+        else if(i==2 && j==2) placeholder->lconf->J->data[bond]=J;
+        else if(i==2 && j==3) placeholder->lconf->J->data[bond]=J;
+    }
+    for(bond=nsite;bond<(2*nsite);++bond){
+        placeholder->lconf->J->data[bond]=1;
+        i = ((bond-nsite)%placeholder->lconf->shape[0])%4;
+        j = ((bond-nsite)/placeholder->lconf->shape[0])%4;
+        if(i==0 && j==2) placeholder->lconf->J->data[bond]=J;
+        else if(i==1 && j==2) placeholder->lconf->J->data[bond]=J;
+        else if(i==2 && j==0) placeholder->lconf->J->data[bond]=J;
+        else if(i==3 && j==0) placeholder->lconf->J->data[bond]=J;
     }
 }
 

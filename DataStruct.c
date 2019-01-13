@@ -83,6 +83,8 @@ LatticeConf* CreateSquareLatticeConf(const int* shape, int dims)
     lconf->first =CreateIntSequence(lconf->nsite);
     lconf->last  =CreateIntSequence(lconf->nsite);
     lconf->flip  =CreateIntSequence(lconf->nsite);
+    lconf->J = CreateDoubleSequence(lconf->Nb);
+    for(int i=0;i<lconf->Nb;++i) lconf->J->data[i]=1;
 
     return lconf;
 }
@@ -128,6 +130,7 @@ void DestroyLatticeConf(LatticeConf* lconf)
     DestroyIntSequence(lconf->first);
     DestroyIntSequence(lconf->last);
     DestroyIntSequence(lconf->flip);
+    DestroyDoubleSequence(lconf->J);
     free(lconf->shape);
     free(lconf);
 }

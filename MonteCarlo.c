@@ -18,7 +18,7 @@ void MCInitializeLatticeConf(SEPlaceHolder* placeholder)
     }
 }
 
-void MCDiagonalOperatorUpdateIsotropy(SEPlaceHolder* placeholder)
+void MCDiagonalOperatorUpdate(SEPlaceHolder* placeholder)
 {
     int length=placeholder->length;
     int ndiff=placeholder->ops->ndiff;
@@ -38,14 +38,15 @@ void MCDiagonalOperatorUpdateIsotropy(SEPlaceHolder* placeholder)
             LatticeConfApplyMapping(placeholder->lconf,bond);
             left=placeholder->lconf->left;
             right=placeholder->lconf->right;
-            if(dis*2*(length-noo)<beta*Nb && placeholder->lconf->sigmap->data[left]!=placeholder->lconf->sigmap->data[right]){
+            if(dis*2*(length-noo)<beta*placeholder->lconf->J->data[bond]*Nb && placeholder->lconf->sigmap->data[left]!=placeholder->lconf->sigmap->data[right]){
                 placeholder->ops->sequence->data[p]=bond*ndiff;
                 noo++;
             }
         }
         else if(placeholder->ops->sequence->data[p]%ndiff==0){
+            bond = placeholder->ops->sequence->data[p]/ndiff;
             dis  = gsl_rng_uniform_pos(placeholder->rng);
-            if(dis*beta*Nb<2*(length-noo+1)){
+            if(dis*beta*placeholder->lconf->J->data[bond]*Nb<2*(length-noo+1)){
                 placeholder->ops->sequence->data[p]=-1;
                 noo--;
             }
@@ -152,7 +153,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 
     int j=0;
     for(j=0;j<cutoff;j++){
-        MCDiagonalOperatorUpdateIsotropy(placeholder);
+        MCDiagonalOperatorUpdate(placeholder);
         MCOffDiagOperatorUpdate(placeholder);
         MCFlipUpdate(placeholder);
 #if 0
@@ -193,7 +194,7 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
     j=0;
     placeholder->isweep=0;
     while(j<nsweep){
-        MCDiagonalOperatorUpdateIsotropy(placeholder);
+        MCDiagonalOperatorUpdate(placeholder);
         MCOffDiagOperatorUpdate(placeholder);
         MCFlipUpdate(placeholder);
 
@@ -214,6 +215,75 @@ void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
             exit(-1);
         }
 #endif
+
+        SEPlaceHolderLengthMonitor(placeholder, buffer);
+        placeholder->isweep++;
+        j++;
+    }
+
+    DestroySEPlaceHolder(placeholder);
+    DestroyMappingList();
+}
+
+void MCDisorder2D(double J, double beta, int* shape, int nsweep, int cutoff, int seed)
+{
+    int ndiff=2,length=50;
+    int dims=2;
+    double max_err=1.e-4;
+    double buffer=1.3;
+    char prefix[128];
+
+    sprintf(prefix,"data/disorder_shape_%d_%d_J_%.4f_beta_%.1f",shape[0],shape[1],J,beta);
+
+    int Nb=shape[0]*shape[1]*dims;
+    CreateMappingList(mapping_2d,shape,Nb);
+
+    SEPlaceHolder* placeholder = CreateSEPlaceHolder();
+    SEPlaceHolderSetLattice(placeholder,mapping_list,shape,dims,0);
+    SEPlaceHolderSetLength(placeholder,length,ndiff);
+    SEPlaceHolderSetRandomSeed(placeholder, seed);
+    SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
+    SEPlaceHolderSetBeta(placeholder, beta);
+    SEPlaceHolderSetError(placeholder, max_err);
+    SEPlaceHolderSetDisorder2D(placeholder,J);
+    SEPlaceHolderCheckSetting(placeholder);
+
+    MCInitializeLatticeConf(placeholder);
+
+    int j=0;
+    for(j=0;j<cutoff;j++){
+        MCDiagonalOperatorUpdate(placeholder);
+        MCOffDiagOperatorUpdate(placeholder);
+        MCFlipUpdate(placeholder);
+        SEPlaceHolderLengthMonitor(placeholder, buffer);
+    }
+
+    int nobs=7;
+    int nave=nsweep;
+    Observable *obs = CreateObservable(nobs,nave);
+    ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
+    ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
+    ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+    ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+
+    j=0;
+    placeholder->isweep=0;
+    while(j<nsweep){
+        MCDiagonalOperatorUpdate(placeholder);
+        MCOffDiagOperatorUpdate(placeholder);
+        MCFlipUpdate(placeholder);
+
+        ObservableFastPreCal(placeholder);
+        ObservableDoMeasurement(obs,placeholder);
+        if((j+1)%10000==0){
+            //ObservableShow(obs,placeholder,NULL,0);
+            //ObservableShow(obs,placeholder,prefix,1);
+            ObservableShow(obs,placeholder,prefix,2);
+            ObservableShow(obs,placeholder,prefix,3);
+        }
 
         SEPlaceHolderLengthMonitor(placeholder, buffer);
         placeholder->isweep++;
@@ -246,7 +316,7 @@ int main(int argn, char *argv[])
 }
 #endif
 
-#if 1
+#if 0
 int main(int argn, char *argv[])
 {
     int shape[2]={16,16};
@@ -265,5 +335,29 @@ int main(int argn, char *argv[])
     }
 
     MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
+}
+#endif
+
+#if 1
+int main(int argn, char *argv[])
+{
+    int shape[2]={16,16};
+    double beta=16;
+    double J=2;
+    int nsweep=1000000,cutoff=20000;
+    int seed=2318;
+
+    int i;
+    for(i=1;i<argn;i++){
+        if(i==1) shape[0] = atoi(argv[1]);
+        else if(i==2) shape[1] = atoi(argv[2]);
+        else if(i==3) J = atof(argv[3]);
+        else if(i==4) beta = atof(argv[4]);
+        else if(i==5) cutoff = atoi(argv[5]);
+        else if(i==6) nsweep = atoi(argv[6]);
+        else if(i==7) seed = atoi(argv[7]);
+    }
+
+    MCDisorder2D(J,beta,shape,nsweep,cutoff,seed);
 }
 #endif

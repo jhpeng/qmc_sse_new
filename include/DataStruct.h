@@ -69,6 +69,7 @@ typedef struct LatticeConf{
     IntSequence *first;
     IntSequence *last;
     IntSequence *flip;
+    DoubleSequence *J;
     bond2sigma *mapping;
 } LatticeConf;
 
