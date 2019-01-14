@@ -14,7 +14,7 @@ static int mode=0;
 static double J=1;
 static double beta=4;
 static int thermal=20000;
-static int nsweep=100000;
+static int nsweep=1000000;
 static int seed=0;
 static int help=0;
 
