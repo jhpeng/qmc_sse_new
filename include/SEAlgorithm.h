@@ -61,4 +61,5 @@ void SEPlaceHolderLengthMonitor(SEPlaceHolder* placeholder, double buffer);
 
 void SEPlaceHolderSetDisorder2D(SEPlaceHolder* placeholder, double J);
 
+void SEPlaceHolderSetHerringbond2D(SEPlaceHolder* placeholder, double J);
 #endif
