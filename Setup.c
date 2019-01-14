@@ -16,6 +16,7 @@ static double beta=4;
 static int thermal=20000;
 static int nsweep=100000;
 static int seed=0;
+static int help=0;
 
 void SetupFromArgument(int argc, char** argv)
 {
@@ -24,6 +25,7 @@ void SetupFromArgument(int argc, char** argv)
     while((c=getopt(argc,argv,"hx:y:d:m:j:b:t:n:s:"))!=-1){
         switch(c){
             case 'h':
+                help=1;
                 printf("usage: \n");
                 printf("\t-d <dimension> default 2\n");
                 printf("\t-x <length of x> default 8\n");
@@ -77,6 +79,7 @@ void SetupFromArgument(int argc, char** argv)
 
 void Execute()
 {
+    if(help) return;
     if(dims==2){
         if(lz!=0){
             printf("Execute : For 2 dimension, lz must be zero\n");
