@@ -16,7 +16,6 @@ finish=0
 i=0
 while i<len(loop):
     if count>0:
-        print(i)
         seed_t=seed+i
         args='/Users/jhpeng/Works/qmc/qmc_sse_new/exe -x '+str(lx)+' -y '+str(ly)+' -m 1 -b '+str(beta)+' -j '+str(loop[i])+' -s '+str(seed_t)
         p = sp.Popen(args,shell=True)
