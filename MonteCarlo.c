@@ -363,6 +363,75 @@ void MCHerringbond2D(double J, double beta, int* shape, int nsweep, int cutoff, 
     DestroyMappingList();
 }
 
+void MCBetaIncrease2D(double beta_i, double beta_f, double interval, int* shape, int nsweep, int cutoff, int seed)
+{
+    int ndiff=2,length=50;
+    int dims=2;
+    double max_err=1.e-4;
+    double buffer=1.5;
+    double J=1.0;
+    char prefix[128];
+
+    sprintf(prefix,"data/betaincrease_shape_%d_%d_seed_%d",shape[0],shape[1],seed);
+
+    int Nb=shape[0]*shape[1]*dims;
+    CreateMappingList(mapping_2d,shape,Nb);
+
+    SEPlaceHolder* placeholder = CreateSEPlaceHolder();
+    SEPlaceHolderSetLattice(placeholder,mapping_list,shape,dims,0);
+    SEPlaceHolderSetLength(placeholder,length,ndiff);
+    SEPlaceHolderSetRandomSeed(placeholder, seed);
+    SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
+    SEPlaceHolderSetError(placeholder, max_err);
+    SEPlaceHolderSetHerringbond2D(placeholder,J);
+
+    MCInitializeLatticeConf(placeholder);
+
+    double beta;
+    for(beta=beta_i;beta<=beta_f;beta+=interval){
+        SEPlaceHolderSetBeta(placeholder, beta);
+        SEPlaceHolderCheckSetting(placeholder);
+        int j=0;
+        for(j=0;j<cutoff;j++){
+            MCDiagonalOperatorUpdate(placeholder);
+            MCOffDiagOperatorUpdate(placeholder);
+            MCFlipUpdate(placeholder);
+            SEPlaceHolderLengthMonitor(placeholder, buffer);
+        }
+
+        int nobs=7;
+        int nave=nsweep;
+        Observable *obs = CreateObservable(nobs,nave);
+        ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
+        ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
+        ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+
+        j=0;
+        placeholder->isweep=0;
+        while(j<nsweep){
+            MCDiagonalOperatorUpdate(placeholder);
+            MCOffDiagOperatorUpdate(placeholder);
+            MCFlipUpdate(placeholder);
+
+            ObservableFastPreCal(placeholder);
+            ObservableDoMeasurement(obs,placeholder);
+
+            //SEPlaceHolderLengthMonitor(placeholder, buffer);
+            placeholder->isweep++;
+            j++;
+        }
+        ObservableShow(obs,placeholder,prefix,4);
+        DestroyObservable(obs);
+    }
+
+    DestroySEPlaceHolder(placeholder);
+    DestroyMappingList();
+}
+
 #if 0
 int main(int argn, char *argv[])
 {
@@ -382,6 +451,26 @@ int main(int argn, char *argv[])
         seed = seed/shape[0]*i;
         MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
     }
+}
+#endif
+
+#if 0
+int main()
+{
+    double beta_i=1;
+    double beta_f=3;
+    double interval=0.1;
+    int shape[2]={16,16};
+    int nsweep=4000;
+    int cutoff=2000;
+    int seed=2;
+
+    for(int i=0;i<10;++i){
+        seed+=i;
+        MCBetaIncrease2D(beta_i,beta_f,interval,shape,nsweep,cutoff,seed);
+    }
+
+    return 0;
 }
 #endif
 

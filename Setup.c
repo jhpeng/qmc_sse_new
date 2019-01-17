@@ -13,16 +13,20 @@ static int dims=2;
 static int mode=0;
 static double J=1;
 static double beta=4;
+static double beta_i=1.0;
+static double beta_f=3.0;
+static double interv=0.5;
 static int thermal=20000;
 static int nsweep=1000000;
 static int seed=0;
 static int help=0;
 
+
 void SetupFromArgument(int argc, char** argv)
 {
     int c;
 
-    while((c=getopt(argc,argv,"hx:y:d:m:j:b:t:n:s:"))!=-1){
+    while((c=getopt(argc,argv,"hx:y:d:m:j:b:t:n:s:i:f:v:"))!=-1){
         switch(c){
             case 'h':
                 help=1;
@@ -34,9 +38,12 @@ void SetupFromArgument(int argc, char** argv)
                 printf("\t-m <mode> default 0\n");
                 printf("\t\tmode=0 : disorder\n");
                 printf("\t\tmode=1 : herringbond\n");
-                printf("\t\tmode=2 : clean\n");
+                printf("\t\tmode=2 : beta increase\n");
                 printf("\t-j <bond ratio> default 1\n");
                 printf("\t-b <beta> default 4\n");
+                printf("\t-i <beta_i>   default 1\n");
+                printf("\t-f <beta_f>   default 3\n");
+                printf("\t-v <interval> default 0.5\n");
                 printf("\t-t <nsweep for thermal> default 20000\n");
                 printf("\t-n <nsweep for estimetor> default 1000000\n");
                 printf("\t-s <random seed> default 0\n");
@@ -61,6 +68,15 @@ void SetupFromArgument(int argc, char** argv)
                 break;
             case 'b':
                 beta=atof(optarg);
+                break;
+            case 'i':
+                beta_i=atof(optarg);
+                break;
+            case 'f':
+                beta_f=atof(optarg);
+                break;
+            case 'v':
+                interv=atof(optarg);
                 break;
             case 't':
                 thermal=atoi(optarg);
@@ -102,6 +118,12 @@ void Execute()
             shape[1]=ly;
             MCHerringbond2D(J,beta,shape,nsweep,thermal,seed);
         }
+        else if(mode==2){
+            int shape[2];
+            shape[0]=lx;
+            shape[1]=ly;
+            MCBetaIncrease2D(beta_i,beta_f,interv,shape,nsweep,thermal,seed);
+        }
         else{
             printf("Execute : Can not support mode=%d now\n",mode);
         }
@@ -112,9 +134,11 @@ void Execute()
     }
 }
 
+#if 1
 int main(int argc, char* argv[])
 {
     SetupFromArgument(argc,argv);
     Execute();
     return 0;
 }
+#endif

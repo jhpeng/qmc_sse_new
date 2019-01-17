@@ -172,6 +172,17 @@ void ObservableShow(
         fprintf(outfile,"\n");
         fclose(outfile);
     }
+    else if(mode==4){
+        sprintf(filename,"%s.fmt4",prefix);
+        FILE* outfile = fopen(filename,"a");
+        int i_obs;
+        fprintf(outfile,"%e ",placeholder->beta);
+        for(i_obs=0;i_obs<obs->nobs;++i_obs){
+            fprintf(outfile,"%e ",obs->mean[i_obs]);
+        }
+        fprintf(outfile,"\n");
+        fclose(outfile);
+    }
 }
 
 double ObservableSpecificEnergy(

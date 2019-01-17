@@ -17,5 +17,13 @@ void MCHerringbond2D(
             int cutoff, 
             int seed);
 
+void MCBetaIncrease2D(
+            double beta_i, 
+            double beta_f, 
+            double interval, 
+            int* shape, 
+            int nsweep, 
+            int cutoff, 
+            int seed);
 
 #endif
