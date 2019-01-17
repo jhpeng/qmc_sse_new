@@ -74,5 +74,9 @@ double ObservableFastStiffnessX(
                     SEPlaceHolder* placeholder,
                     void* args);
 
+double ObservableFastStiffnessY(
+                    SEPlaceHolder* placeholder,
+                    void* args);
+
 
 #endif

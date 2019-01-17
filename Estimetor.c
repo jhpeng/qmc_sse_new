@@ -388,7 +388,7 @@ double ObservableAntiferroOrder4(
     return m4;
 }
 
-static double obs_m1,obs_m2,obs_m4,obs_stifx;
+static double obs_m1,obs_m2,obs_m4,obs_stifx,obs_stify;
 void ObservableFastPreCal(
                     SEPlaceHolder* placeholder)
 {
@@ -402,7 +402,8 @@ void ObservableFastPreCal(
     double m1=0;
     double m2=0;
     double m4=0;
-    double winding=0;
+    double winding_x=0;
+    double winding_y=0;
 
     LatticeConfSynchronizeSigma(placeholder->lconf);
 
@@ -429,7 +430,10 @@ void ObservableFastPreCal(
                     j = left%xlen;
                     mz-=4*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
                     if(bond<nsite){
-                        winding += placeholder->lconf->sigmap->data[left];
+                        winding_x += placeholder->lconf->sigmap->data[left];
+                    }
+                    else if(bond<2*nsite){
+                        winding_y += placeholder->lconf->sigmap->data[left];
                     }
                     placeholder->lconf->sigmap->data[left]*=-1;
                     placeholder->lconf->sigmap->data[right]*=-1;
@@ -441,7 +445,8 @@ void ObservableFastPreCal(
     obs_m1 = m1/length/nsite*0.5;
     obs_m2 = m2/length/nsite/nsite*0.25;
     obs_m4 = m4/length/nsite/nsite/nsite/nsite*0.0625;
-    obs_stifx = winding*winding/placeholder->lconf->shape[0]/placeholder->lconf->shape[0]/beta;
+    obs_stifx = winding_x*winding_x/placeholder->lconf->shape[0]/placeholder->lconf->shape[0]/beta;
+    obs_stify = winding_y*winding_y/placeholder->lconf->shape[0]/placeholder->lconf->shape[0]/beta;
 }
 
 double ObservableFastAntiferroOrder1(
@@ -470,4 +475,11 @@ double ObservableFastStiffnessX(
                     void* args)
 {
     return obs_stifx;
+}
+
+double ObservableFastStiffnessY(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    return obs_stify;
 }

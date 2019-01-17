@@ -258,13 +258,14 @@ void MCDisorder2D(double J, double beta, int* shape, int nsweep, int cutoff, int
         SEPlaceHolderLengthMonitor(placeholder, buffer);
     }
 
-    int nobs=7;
+    int nobs=8;
     int nave=nsweep;
     Observable *obs = CreateObservable(nobs,nave);
     ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
     ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
     ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
     ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
+    ObservableSetMeasurement(obs,ObservableFastStiffnessY,"stif_y",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
@@ -327,13 +328,14 @@ void MCHerringbond2D(double J, double beta, int* shape, int nsweep, int cutoff, 
         SEPlaceHolderLengthMonitor(placeholder, buffer);
     }
 
-    int nobs=7;
+    int nobs=8;
     int nave=nsweep;
     Observable *obs = CreateObservable(nobs,nave);
     ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
     ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
     ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
     ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
+    ObservableSetMeasurement(obs,ObservableFastStiffnessY,"stif_y",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
@@ -399,13 +401,14 @@ void MCBetaIncrease2D(double J, double dJ, double p, double beta_i, double beta_
             SEPlaceHolderLengthMonitor(placeholder, buffer);
         }
 
-        int nobs=7;
+        int nobs=8;
         int nave=nsweep;
         Observable *obs = CreateObservable(nobs,nave);
         ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
         ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
         ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
         ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStiffnessY,"stif_y",NULL);
         ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
         ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
         ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
