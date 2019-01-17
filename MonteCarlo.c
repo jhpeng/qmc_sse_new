@@ -371,7 +371,7 @@ void MCBetaIncrease2D(double J, double dJ, double p, double beta_i, double beta_
     double buffer=1.5;
     char prefix[128];
 
-    sprintf(prefix,"data/betaincrease_shape_%d_%d_seed_%d",shape[0],shape[1],seed);
+    sprintf(prefix,"data/betaincrease_shape_%d_%d_J_%.4f_dJ_%.2f_p_%.4f_seed_%d",shape[0],shape[1],J,dJ,p,seed);
 
     int Nb=shape[0]*shape[1]*dims;
     CreateMappingList(mapping_2d,shape,Nb);
