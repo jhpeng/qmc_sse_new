@@ -472,6 +472,49 @@ void SEPlaceHolderSetHerringbond2D(SEPlaceHolder* placeholder, double J)
     }
 }
 
+void SEPlaceHolderSetHerringbondRandom2D(SEPlaceHolder* placeholder, double Jc, double dJ, double p)
+{
+    int Nb=placeholder->lconf->Nb;
+    int nsite=placeholder->lconf->nsite;
+    int bond,i,j;
+    double J;
+    if(placeholder->lconf->dims!=2){
+        printf("SEPlaceHolderSetDisorder2D : The dimension must be 2!\n");
+        exit(-1);
+    }
+    else if(Nb!=(2*nsite)){
+        printf("SEPlaceHolderSetDisorder2D : Nb must be 2*nsite!\n");
+        exit(-1);
+    }
+    else if((placeholder->lconf->shape[0]%4)!=0 && (placeholder->lconf->shape[0]%4)!=0){
+        printf("SEPlaceHolderSetDisorder2D : lx and ly must be multiple of 4!\n");
+        exit(-1);
+    }
+
+    for(bond=0;bond<nsite;++bond){
+        placeholder->lconf->J->data[bond]=1;
+        i = (bond%placeholder->lconf->shape[0])%4;
+        j = (bond/placeholder->lconf->shape[0])%4;
+        if(gsl_rng_uniform_pos(placeholder->rng)<p) J=Jc+dJ;
+        else J=Jc-dJ;
+        if(i==1 && j==0) placeholder->lconf->J->data[bond]=J;
+        else if(i==2 && j==1) placeholder->lconf->J->data[bond]=J;
+        else if(i==3 && j==2) placeholder->lconf->J->data[bond]=J;
+        else if(i==0 && j==3) placeholder->lconf->J->data[bond]=J;
+    }
+    for(bond=nsite;bond<(2*nsite);++bond){
+        placeholder->lconf->J->data[bond]=1;
+        i = ((bond-nsite)%placeholder->lconf->shape[0])%4;
+        j = ((bond-nsite)/placeholder->lconf->shape[0])%4;
+        if(gsl_rng_uniform_pos(placeholder->rng)<p) J=Jc+dJ;
+        else J=Jc-dJ;
+        if(i==0 && j==0) placeholder->lconf->J->data[bond]=J;
+        else if(i==1 && j==1) placeholder->lconf->J->data[bond]=J;
+        else if(i==2 && j==2) placeholder->lconf->J->data[bond]=J;
+        else if(i==3 && j==3) placeholder->lconf->J->data[bond]=J;
+    }
+}
+
 #if 0
 int main()
 {

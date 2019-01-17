@@ -18,6 +18,9 @@ void MCHerringbond2D(
             int seed);
 
 void MCBetaIncrease2D(
+            double J,
+            double dJ,
+            double p,
             double beta_i, 
             double beta_f, 
             double interval, 

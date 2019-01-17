@@ -12,6 +12,8 @@ static int lz=0;
 static int dims=2;
 static int mode=0;
 static double J=1;
+static double dJ=0.5;
+static double p=0.5;
 static double beta=4;
 static double beta_i=1.0;
 static double beta_f=3.0;
@@ -26,12 +28,12 @@ void SetupFromArgument(int argc, char** argv)
 {
     int c;
 
-    while((c=getopt(argc,argv,"hx:y:d:m:j:b:t:n:s:i:f:v:"))!=-1){
+    while((c=getopt(argc,argv,"hx:y:D:m:j:b:t:n:s:i:f:v:p:d:"))!=-1){
         switch(c){
             case 'h':
                 help=1;
                 printf("usage: \n");
-                printf("\t-d <dimension> default 2\n");
+                printf("\t-D <dimension> default 2\n");
                 printf("\t-x <length of x> default 8\n");
                 printf("\t-y <length of y> default 8\n");
                 printf("\t-z <length of z> default 0\n");
@@ -57,7 +59,7 @@ void SetupFromArgument(int argc, char** argv)
             case 'z':
                 lz=atoi(optarg);
                 break;
-            case 'd':
+            case 'D':
                 dims=atoi(optarg);
                 break;
             case 'm':
@@ -65,6 +67,12 @@ void SetupFromArgument(int argc, char** argv)
                 break;
             case 'j':
                 J=atof(optarg);
+                break;
+            case 'd':
+                dJ=atof(optarg);
+                break;
+            case 'p':
+                p=atof(optarg);
                 break;
             case 'b':
                 beta=atof(optarg);
@@ -122,7 +130,7 @@ void Execute()
             int shape[2];
             shape[0]=lx;
             shape[1]=ly;
-            MCBetaIncrease2D(beta_i,beta_f,interv,shape,nsweep,thermal,seed);
+            MCBetaIncrease2D(J,dJ,p,beta_i,beta_f,interv,shape,nsweep,thermal,seed);
         }
         else{
             printf("Execute : Can not support mode=%d now\n",mode);

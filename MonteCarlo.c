@@ -363,13 +363,12 @@ void MCHerringbond2D(double J, double beta, int* shape, int nsweep, int cutoff, 
     DestroyMappingList();
 }
 
-void MCBetaIncrease2D(double beta_i, double beta_f, double interval, int* shape, int nsweep, int cutoff, int seed)
+void MCBetaIncrease2D(double J, double dJ, double p, double beta_i, double beta_f, double interval, int* shape, int nsweep, int cutoff, int seed)
 {
     int ndiff=2,length=50;
     int dims=2;
     double max_err=1.e-4;
     double buffer=1.5;
-    double J=1.0;
     char prefix[128];
 
     sprintf(prefix,"data/betaincrease_shape_%d_%d_seed_%d",shape[0],shape[1],seed);
@@ -384,6 +383,7 @@ void MCBetaIncrease2D(double beta_i, double beta_f, double interval, int* shape,
     SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
     SEPlaceHolderSetError(placeholder, max_err);
     SEPlaceHolderSetHerringbond2D(placeholder,J);
+    SEPlaceHolderSetHerringbondRandom2D(placeholder,J,dJ,p);
 
     MCInitializeLatticeConf(placeholder);
 
