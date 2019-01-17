@@ -11,7 +11,7 @@ beta_f=32.0
 interv=0.5
 J=1.9
 dJ=0.5
-p=0.8
+P=0.8
 seed=21873
 n_thread=3
 
@@ -25,7 +25,7 @@ i=0
 while i<len(loop):
     if count>0:
         seed_t=seed+i
-        args='./exe -n '+str(nsweep)+' -t '+str(thermal)+' -x '+str(lx)+' -y '+str(ly)+' -m 2 -s '+str(loop[i])+' -j '+str(J)+' -i '+str(beta_i)+' -f '+str(beta_f)+' -v '+str(interv)+' -d '+str(dJ)+' -p '+str(p)
+        args='./exe -n '+str(nsweep)+' -t '+str(thermal)+' -x '+str(lx)+' -y '+str(ly)+' -m 2 -s '+str(loop[i])+' -j '+str(J)+' -i '+str(beta_i)+' -f '+str(beta_f)+' -v '+str(interv)+' -d '+str(dJ)+' -p '+str(P)
         p = sp.Popen(args,shell=True)
         pipe.append(p)
         count=count-1
