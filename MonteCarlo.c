@@ -367,7 +367,7 @@ void MCHerringbond2D(double J, double beta, int* shape, int nsweep, int cutoff, 
 
 void MCBetaIncreasePlaquetteDisorder2D(double J, double dJ, double p, double beta_i, double beta_f, double interval, int* shape, int nsweep, int cutoff, int seed)
 {
-    int ndiff=2,length=50;
+    int ndiff=2,length=1000;
     int dims=2;
     double max_err=1.e-4;
     double buffer=1.5;
@@ -384,8 +384,76 @@ void MCBetaIncreasePlaquetteDisorder2D(double J, double dJ, double p, double bet
     SEPlaceHolderSetRandomSeed(placeholder, seed);
     SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
     SEPlaceHolderSetError(placeholder, max_err);
-    SEPlaceHolderSetHerringbond2D(placeholder,J);
     SEPlaceHolderSetPlaquetteRandom2D(placeholder,J,dJ,p);
+
+    MCInitializeLatticeConf(placeholder);
+
+    double beta;
+    for(beta=beta_i;beta<=beta_f;beta+=interval){
+        SEPlaceHolderSetBeta(placeholder, beta);
+        SEPlaceHolderCheckSetting(placeholder);
+        int j=0;
+        for(j=0;j<cutoff;j++){
+            MCDiagonalOperatorUpdate(placeholder);
+            MCOffDiagOperatorUpdate(placeholder);
+            MCFlipUpdate(placeholder);
+            SEPlaceHolderLengthMonitor(placeholder, buffer);
+        }
+
+        int nobs=8;
+        int nave=nsweep;
+        Observable *obs = CreateObservable(nobs,nave);
+        ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
+        ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
+        ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStiffnessY,"stif_y",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+
+        j=0;
+        placeholder->isweep=0;
+        while(j<nsweep){
+            MCDiagonalOperatorUpdate(placeholder);
+            MCOffDiagOperatorUpdate(placeholder);
+            MCFlipUpdate(placeholder);
+
+            ObservableFastPreCal(placeholder);
+            ObservableDoMeasurement(obs,placeholder);
+
+            //SEPlaceHolderLengthMonitor(placeholder, buffer);
+            placeholder->isweep++;
+            j++;
+        }
+        ObservableShow(obs,placeholder,prefix,4);
+        DestroyObservable(obs);
+    }
+
+    DestroySEPlaceHolder(placeholder);
+    DestroyMappingList();
+}
+
+void MCBetaIncreaseConfigurationalDisorder2D(double J, double beta_i, double beta_f, double interval, int* shape, int nsweep, int cutoff, int seed)
+{
+    int ndiff=2,length=1000;
+    int dims=2;
+    double max_err=1.e-4;
+    double buffer=1.5;
+    char prefix[128];
+
+    sprintf(prefix,"data/configurational_disorder_shape_%d_%d_J_%.4f_seed_%d",shape[0],shape[1],J,seed);
+
+    int Nb=shape[0]*shape[1]*dims;
+    CreateMappingList(mapping_2d,shape,Nb);
+
+    SEPlaceHolder* placeholder = CreateSEPlaceHolder();
+    SEPlaceHolderSetLattice(placeholder,mapping_list,shape,dims,0);
+    SEPlaceHolderSetLength(placeholder,length,ndiff);
+    SEPlaceHolderSetRandomSeed(placeholder, seed);
+    SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
+    SEPlaceHolderSetError(placeholder, max_err);
+    SEPlaceHolderSetConfigurationalDisorder2D(placeholder,J);
 
     MCInitializeLatticeConf(placeholder);
 

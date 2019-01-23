@@ -554,6 +554,38 @@ void SEPlaceHolderSetPlaquetteRandom2D(SEPlaceHolder* placeholder, double Jc, do
     }
 }
 
+void SEPlaceHolderSetConfigurationalDisorder2D(SEPlaceHolder* placeholder, double J)
+{
+    int Nb=placeholder->lconf->Nb;
+    int nsite=placeholder->lconf->nsite;
+    int bond,i,j;
+    if(placeholder->lconf->dims!=2){
+        printf("SEPlaceHolderSetDisorder2D : The dimension must be 2!\n");
+        exit(-1);
+    }
+    else if(Nb!=(2*nsite)){
+        printf("SEPlaceHolderSetDisorder2D : Nb must be 2*nsite!\n");
+        exit(-1);
+    }
+
+    if(gsl_rng_uniform_pos(placeholder->rng)<0.5){
+        for(bond=0;bond<nsite;++bond){
+            placeholder->lconf->J->data[bond]=1;
+            i = (bond%placeholder->lconf->shape[0])%2;
+            j = (bond/placeholder->lconf->shape[0])%2;
+            if(i==0) placeholder->lconf->J->data[bond]=J;
+        }
+    }
+    else{
+        for(bond=nsite;bond<(2*nsite);++bond){
+            placeholder->lconf->J->data[bond]=1;
+            i = (bond%placeholder->lconf->shape[0])%2;
+            j = (bond/placeholder->lconf->shape[0])%2;
+            if(j==0) placeholder->lconf->J->data[bond]=J;
+        }
+    }
+}
+
 #if 0
 int main()
 {

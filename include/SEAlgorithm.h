@@ -59,9 +59,13 @@ int SEPlaceHolderCheckSetting(SEPlaceHolder* placeholder);
 
 void SEPlaceHolderLengthMonitor(SEPlaceHolder* placeholder, double buffer);
 
-void SEPlaceHolderSetDisorder2D(SEPlaceHolder* placeholder, double J);
+void SEPlaceHolderSetDisorder2D(
+                    SEPlaceHolder* placeholder, 
+                    double J);
 
-void SEPlaceHolderSetHerringbond2D(SEPlaceHolder* placeholder, double J);
+void SEPlaceHolderSetHerringbond2D(
+                    SEPlaceHolder* placeholder, 
+                    double J);
 
 void SEPlaceHolderSetHerringbondRandom2D(
                     SEPlaceHolder* placeholder, 
@@ -74,4 +78,8 @@ void SEPlaceHolderSetPlaquetteRandom2D(
                     double Jc, 
                     double dJ, 
                     double p);
+
+void SEPlaceHolderSetConfigurationalDisorder2D(
+                    SEPlaceHolder* placeholder, 
+                    double J);
 #endif
