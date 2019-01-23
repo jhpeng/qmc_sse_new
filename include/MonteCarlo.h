@@ -17,7 +17,7 @@ void MCHerringbond2D(
             int cutoff, 
             int seed);
 
-void MCBetaIncrease2D(
+void MCBetaIncreasePlaquetteDisorder2D(
             double J,
             double dJ,
             double p,

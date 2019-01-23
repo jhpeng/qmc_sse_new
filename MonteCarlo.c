@@ -365,7 +365,7 @@ void MCHerringbond2D(double J, double beta, int* shape, int nsweep, int cutoff, 
     DestroyMappingList();
 }
 
-void MCBetaIncrease2D(double J, double dJ, double p, double beta_i, double beta_f, double interval, int* shape, int nsweep, int cutoff, int seed)
+void MCBetaIncreasePlaquetteDisorder2D(double J, double dJ, double p, double beta_i, double beta_f, double interval, int* shape, int nsweep, int cutoff, int seed)
 {
     int ndiff=2,length=50;
     int dims=2;
@@ -373,7 +373,7 @@ void MCBetaIncrease2D(double J, double dJ, double p, double beta_i, double beta_
     double buffer=1.5;
     char prefix[128];
 
-    sprintf(prefix,"data/betaincrease_shape_%d_%d_J_%.4f_dJ_%.2f_p_%.4f_seed_%d",shape[0],shape[1],J,dJ,p,seed);
+    sprintf(prefix,"data/plaquette_disorder_shape_%d_%d_J_%.4f_dJ_%.2f_p_%.4f_seed_%d",shape[0],shape[1],J,dJ,p,seed);
 
     int Nb=shape[0]*shape[1]*dims;
     CreateMappingList(mapping_2d,shape,Nb);
@@ -385,7 +385,7 @@ void MCBetaIncrease2D(double J, double dJ, double p, double beta_i, double beta_
     SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
     SEPlaceHolderSetError(placeholder, max_err);
     SEPlaceHolderSetHerringbond2D(placeholder,J);
-    SEPlaceHolderSetHerringbondRandom2D(placeholder,J,dJ,p);
+    SEPlaceHolderSetPlaquetteRandom2D(placeholder,J,dJ,p);
 
     MCInitializeLatticeConf(placeholder);
 

@@ -68,4 +68,10 @@ void SEPlaceHolderSetHerringbondRandom2D(
                     double Jc, 
                     double dJ, 
                     double p);
+
+void SEPlaceHolderSetPlaquetteRandom2D(
+                    SEPlaceHolder* placeholder, 
+                    double Jc, 
+                    double dJ, 
+                    double p);
 #endif
