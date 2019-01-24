@@ -373,7 +373,7 @@ void MCBetaIncreasePlaquetteDisorder2D(double J, double dJ, double p, double bet
     double buffer=1.5;
     char prefix[128];
 
-    sprintf(prefix,"data/plaquette_disorder_shape_%d_%d_J_%.4f_dJ_%.2f_p_%.4f_seed_%d",shape[0],shape[1],J,dJ,p,seed);
+    sprintf(prefix,"data/plaquette_disorder_shape_%d_%d_J_%.4f_bi_%.1f_p_%.4f_seed_%d",shape[0],shape[1],J,beta_i,p,seed);
 
     int Nb=shape[0]*shape[1]*dims;
     CreateMappingList(mapping_2d,shape,Nb);
@@ -442,7 +442,7 @@ void MCBetaIncreaseConfigurationalDisorder2D(double J, double beta_i, double bet
     double buffer=1.5;
     char prefix[128];
 
-    sprintf(prefix,"data/configurational_disorder_shape_%d_%d_J_%.4f_seed_%d",shape[0],shape[1],J,seed);
+    sprintf(prefix,"data/configurational_disorder_shape_%d_%d_J_%.4f_bi_%.1f_seed_%d",shape[0],shape[1],J,beta_i,seed);
 
     int Nb=shape[0]*shape[1]*dims;
     CreateMappingList(mapping_2d,shape,Nb);
