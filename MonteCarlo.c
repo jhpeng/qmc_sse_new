@@ -389,7 +389,7 @@ void MCBetaIncreasePlaquetteDisorder2D(double J, double dJ, double p, double bet
     MCInitializeLatticeConf(placeholder);
 
     double beta;
-    for(beta=beta_i;beta<=beta_f;beta+=interval){
+    for(beta=beta_i;beta<beta_f;beta+=interval){
         SEPlaceHolderSetBeta(placeholder, beta);
         SEPlaceHolderCheckSetting(placeholder);
         int j=0;
@@ -458,7 +458,7 @@ void MCBetaIncreaseConfigurationalDisorder2D(double J, double beta_i, double bet
     MCInitializeLatticeConf(placeholder);
 
     double beta;
-    for(beta=beta_i;beta<=beta_f;beta+=interval){
+    for(beta=beta_i;beta<beta_f;beta+=interval){
         SEPlaceHolderSetBeta(placeholder, beta);
         SEPlaceHolderCheckSetting(placeholder);
         int j=0;
