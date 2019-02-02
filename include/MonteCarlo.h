@@ -38,4 +38,15 @@ void MCBetaIncreaseConfigurationalDisorder2D(
             int nsweep, 
             int cutoff, 
             int seed);
+
+void MCZeroTempPlaquetteDisorder2D(
+            double J, 
+            double dJ, 
+            double p, 
+            double beta, 
+            int* shape, 
+            int nsweep, 
+            int cutoff, 
+            int seed);
+
 #endif
