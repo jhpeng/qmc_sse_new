@@ -38,10 +38,11 @@ void SetupFromArgument(int argc, char** argv)
                 printf("\t-y <length of y> default 8\n");
                 printf("\t-z <length of z> default 0\n");
                 printf("\t-m <mode> default 0\n");
-                printf("\t\tmode=0 : disorder\n");
-                printf("\t\tmode=1 : herringbond\n");
-                printf("\t\tmode=2 : plaquette disorder\n");
-                printf("\t\tmode=3 : configurational disorder\n");
+                printf("\t\tmode=0 : disorder (normal sheme)\n");
+                printf("\t\tmode=1 : herringbond (normal scheme)\n");
+                printf("\t\tmode=2 : plaquette disorder (beta increase scheme)\n");
+                printf("\t\tmode=3 : configurational disorder (beta increase scheme)\n");
+                printf("\t\tmode=4 : plaquette disorder (zero tempereture)\n");
                 printf("\t-j <bond ratio> default 1\n");
                 printf("\t-b <beta> default 4\n");
                 printf("\t-i <beta_i>   default 1\n");
@@ -140,6 +141,12 @@ void Execute()
             shape[0]=lx;
             shape[1]=ly;
             MCBetaIncreaseConfigurationalDisorder2D(J,beta_i,beta_f,interv,shape,nsweep,thermal,seed);
+        }
+        else if(mode==4){
+            int shape[2];
+            shape[0]=lx;
+            shape[1]=ly;
+            MCZeroTempPlaquetteDisorder2D(J,dJ,p,beta,shape,nsweep,thermal,seed);
         }
         else{
             printf("Execute : Can not support mode=%d now\n",mode);

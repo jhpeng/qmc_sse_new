@@ -6,6 +6,7 @@
 #include "DataStruct.h"
 #include "SEAlgorithm.h"
 #include "Estimetor.h"
+#include "Statistic.h"
 
 void MCInitializeLatticeConf(SEPlaceHolder* placeholder)
 {
@@ -429,6 +430,84 @@ void MCBetaIncreasePlaquetteDisorder2D(double J, double dJ, double p, double bet
         ObservableShow(obs,placeholder,prefix,4);
         DestroyObservable(obs);
     }
+
+    DestroySEPlaceHolder(placeholder);
+    DestroyMappingList();
+}
+
+void MCZeroTempPlaquetteDisorder2D(double J, double dJ, double p, double beta, int* shape, int nsweep, int cutoff, int seed)
+{
+    int ndiff=2,length=1000;
+    int dims=2;
+    double max_err=1.e-4;
+    double buffer=1.3;
+    char prefix[128];
+
+    sprintf(prefix,"data/zero_temp_plaquette_disorder_shape_%d_%d_J_%.4f_beta_%.2f_p_%.4f_seed_%d",shape[0],shape[1],J,beta,p,seed);
+
+    int Nb=shape[0]*shape[1]*dims;
+    CreateMappingList(mapping_2d,shape,Nb);
+
+    SEPlaceHolder* placeholder = CreateSEPlaceHolder();
+    SEPlaceHolderSetLattice(placeholder,mapping_list,shape,dims,0);
+    SEPlaceHolderSetLength(placeholder,length,ndiff);
+    SEPlaceHolderSetRandomSeed(placeholder, seed);
+    SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
+    SEPlaceHolderSetError(placeholder, max_err);
+    SEPlaceHolderSetPlaquetteRandom2D(placeholder,J,dJ,p);
+
+    MCInitializeLatticeConf(placeholder);
+
+    SEPlaceHolderSetBeta(placeholder, beta);
+    SEPlaceHolderCheckSetting(placeholder);
+
+    int nobs=8;
+    int nave=nsweep;
+    Observable *obs = CreateObservable(nobs,nave);
+    ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
+    ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
+    ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+    ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
+    ObservableSetMeasurement(obs,ObservableFastStiffnessY,"stif_y",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+
+    for(int k=0;k<2;k++){
+        int j=0;
+        for(j=0;j<cutoff;j++){
+            MCDiagonalOperatorUpdate(placeholder);
+            MCOffDiagOperatorUpdate(placeholder);
+            MCFlipUpdate(placeholder);
+            SEPlaceHolderLengthMonitor(placeholder, buffer);
+        }
+
+        j=0;
+        placeholder->isweep=0;
+        while(j<nsweep){
+            MCDiagonalOperatorUpdate(placeholder);
+            MCOffDiagOperatorUpdate(placeholder);
+            MCFlipUpdate(placeholder);
+
+            ObservableFastPreCal(placeholder);
+            ObservableDoMeasurement(obs,placeholder);
+
+            placeholder->isweep++;
+            j++;
+        }
+        ObservableShow(obs,placeholder,prefix,4);
+    }
+
+    if(0){
+        int nc=20;
+        for(int ic=1;ic<(nc+1);ic++){
+            double ac = StatisticAutocorrelation(obs,6,ic);
+            printf("%e ",ac);
+        }
+        printf("\n");
+    }
+
+    DestroyObservable(obs);
 
     DestroySEPlaceHolder(placeholder);
     DestroyMappingList();

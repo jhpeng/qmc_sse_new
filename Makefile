@@ -21,7 +21,7 @@ LFLAGS	= -L/usr/local/lib
 LIBS	= -lm -lgsl -lgslcblas
 
 # define the C object files
-OBJS	= DataStruct.o SEAlgorithm.o MonteCarlo.o Estimetor.o HTML.o Setup.o
+OBJS	= DataStruct.o SEAlgorithm.o MonteCarlo.o Estimetor.o HTML.o Statistic.o Setup.o
 
 #define the directory for object
 OBJSDIR = object
