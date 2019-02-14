@@ -1,20 +1,28 @@
 import subprocess as sp
 import numpy as np
 import time
+import sys
 
-lx=16
-ly=16
-nsweep=8000
-thermal=5000
-beta=32
+L=int(sys.argv[1])
+N=int(sys.argv[2])
+T=int(sys.argv[3])
+B=2*L
+P=float(sys.argv[4])
+NS=int(sys.argv[5])
+NT=int(sys.argv[6])
+
+lx=L
+ly=L
+nsweep=N
+thermal=T
+beta=B
 J=1.823
 dJ=0.5
-P=0.536
+P=P
 seed=21873
-n_thread=4
+n_thread=NT
 
-
-loop = range(1,500+1)
+loop = range(1,NS+1)
 
 pipe=[]
 count=n_thread
