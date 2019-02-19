@@ -529,8 +529,8 @@ void SEPlaceHolderSetPlaquetteRandom2D(SEPlaceHolder* placeholder, double Jc, do
         printf("SEPlaceHolderSetDisorder2D : Nb must be 2*nsite!\n");
         exit(-1);
     }
-    else if((placeholder->lconf->shape[0]%4)!=0 && (placeholder->lconf->shape[0]%4)!=0){
-        printf("SEPlaceHolderSetDisorder2D : lx and ly must be multiple of 4!\n");
+    else if((placeholder->lconf->shape[0]%2)!=0 && (placeholder->lconf->shape[0]%2)!=0){
+        printf("SEPlaceHolderSetDisorder2D : lx and ly must be multiple of 2!\n");
         exit(-1);
     }
 
