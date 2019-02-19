@@ -325,12 +325,12 @@ void SEPlaceHolderSetRandomSeed(SEPlaceHolder* placeholder, int seed)
 {
     if(placeholder->set_random){
         gsl_rng_free(placeholder->rng);
-        placeholder->rng = gsl_rng_alloc(gsl_rng_taus);
+        placeholder->rng = gsl_rng_alloc(gsl_rng_mt19937);
         gsl_rng_set(placeholder->rng,seed);
     }
     else{
         placeholder->set_random=1;
-        placeholder->rng = gsl_rng_alloc(gsl_rng_taus);
+        placeholder->rng = gsl_rng_alloc(gsl_rng_mt19937);
         gsl_rng_set(placeholder->rng,seed);
     }
 }
