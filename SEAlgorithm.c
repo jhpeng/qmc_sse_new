@@ -114,7 +114,7 @@ void SETraverseLoop(
     opl->noo=0;
     //for(int i=0;i<2*length;++i) opl->loop->data[i]=-1;
     //for(int i=0;i<lconf->nsite;++i) lconf->flip->data[i]=-1;
-    for(v=opl->v0;v<4*length;++v){
+    for(v=opl->v0;v<4*length;v+=4){
         if(opl->lvc->data[v]!=-1){
             int check=1;
             int prev,next,flip;
@@ -133,7 +133,7 @@ void SETraverseLoop(
                 prev = next^1;
                 if(opl->lvc->data[prev]==-1) check=0;
             }
-            opl->v0=v+1;
+            opl->v0=v+4;
             return;
         }
     }
