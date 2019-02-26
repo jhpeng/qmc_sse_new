@@ -58,6 +58,9 @@ double ObservableAntiferroOrder4(
 void ObservableFastPreCal(
                     SEPlaceHolder* placeholder);
 
+void ObservableImproveSpeedPreCal(
+                    SEPlaceHolder* placeholder);
+
 double ObservableFastAntiferroOrder1(
                     SEPlaceHolder* placeholder,
                     void* args);

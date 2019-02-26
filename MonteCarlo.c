@@ -296,7 +296,7 @@ void MCDisorder2D(double J, double beta, int* shape, int nsweep, int cutoff, int
     DestroyMappingList();
 }
 
-void MCHerringbond2D(double J, double beta, int* shape, int nsweep, int cutoff, int seed)
+void MCHerringbond2D(double J, double beta, int* shape, int nsweep, int nblock, int cutoff, int seed)
 {
     int ndiff=2,length=50;
     int dims=2;
@@ -341,25 +341,85 @@ void MCHerringbond2D(double J, double beta, int* shape, int nsweep, int cutoff, 
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
 
-    j=0;
-    placeholder->isweep=0;
-    while(j<nsweep){
+    for(int i_block=0;i_block<nblock;i_block++){
+        placeholder->isweep=0;
+        while(placeholder->isweep<nsweep){
+            MCDiagonalOperatorUpdate(placeholder);
+            MCOffDiagOperatorUpdate(placeholder);
+            MCFlipUpdate(placeholder);
+
+            ObservableFastPreCal(placeholder);
+            ObservableDoMeasurement(obs,placeholder);
+
+            SEPlaceHolderLengthMonitor(placeholder, buffer);
+            placeholder->isweep++;
+        }
+        
+        ObservableShow(obs,placeholder,prefix,4);
+    }
+
+    DestroySEPlaceHolder(placeholder);
+    DestroyMappingList();
+}
+
+void MCHerringbond2DImproveSpeed(double J, double beta, int* shape, int nsweep, int nblock, int cutoff, int seed)
+{
+    int ndiff=2,length=50;
+    int dims=2;
+    double max_err=1.e-4;
+    double buffer=1.3;
+    char prefix[128];
+
+    sprintf(prefix,"data/herringbond_improve_speed_shape_%d_%d_J_%.4f_beta_%.1f",shape[0],shape[1],J,beta);
+
+    int Nb=shape[0]*shape[1]*dims;
+    CreateMappingList(mapping_2d,shape,Nb);
+
+    SEPlaceHolder* placeholder = CreateSEPlaceHolder();
+    SEPlaceHolderSetLattice(placeholder,mapping_list,shape,dims,0);
+    SEPlaceHolderSetLength(placeholder,length,ndiff);
+    SEPlaceHolderSetRandomSeed(placeholder, seed);
+    SEPlaceHolderSetNsweep(placeholder, nsweep, cutoff);
+    SEPlaceHolderSetBeta(placeholder, beta);
+    SEPlaceHolderSetError(placeholder, max_err);
+    SEPlaceHolderSetHerringbond2D(placeholder,J);
+    SEPlaceHolderCheckSetting(placeholder);
+
+    MCInitializeLatticeConf(placeholder);
+
+    int j=0;
+    for(j=0;j<cutoff;j++){
         MCDiagonalOperatorUpdate(placeholder);
         MCOffDiagOperatorUpdate(placeholder);
         MCFlipUpdate(placeholder);
-
-        ObservableFastPreCal(placeholder);
-        ObservableDoMeasurement(obs,placeholder);
-        if((j+1)%10000==0){
-            //ObservableShow(obs,placeholder,NULL,0);
-            //ObservableShow(obs,placeholder,prefix,1);
-            ObservableShow(obs,placeholder,prefix,2);
-            ObservableShow(obs,placeholder,prefix,3);
-        }
-
         SEPlaceHolderLengthMonitor(placeholder, buffer);
-        placeholder->isweep++;
-        j++;
+    }
+
+    int nobs=6;
+    int nave=nsweep;
+    Observable *obs = CreateObservable(nobs,nave);
+    ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
+    ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
+    ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
+    ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+
+    for(int i_block=0;i_block<nblock;i_block++){
+        placeholder->isweep=0;
+        while(placeholder->isweep<nsweep){
+            MCDiagonalOperatorUpdate(placeholder);
+            MCOffDiagOperatorUpdate(placeholder);
+            MCFlipUpdate(placeholder);
+
+            ObservableImproveSpeedPreCal(placeholder);
+            ObservableDoMeasurement(obs,placeholder);
+
+            SEPlaceHolderLengthMonitor(placeholder, buffer);
+            placeholder->isweep++;
+        }
+        
+        ObservableShow(obs,placeholder,prefix,4);
     }
 
     DestroySEPlaceHolder(placeholder);

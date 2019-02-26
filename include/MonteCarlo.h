@@ -14,6 +14,16 @@ void MCHerringbond2D(
             double beta, 
             int* shape, 
             int nsweep, 
+            int nblock,
+            int cutoff, 
+            int seed);
+
+void MCHerringbond2DImproveSpeed(
+            double J, 
+            double beta, 
+            int* shape, 
+            int nsweep, 
+            int nblock,
             int cutoff, 
             int seed);
 

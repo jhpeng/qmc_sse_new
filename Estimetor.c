@@ -180,6 +180,7 @@ void ObservableShow(
         for(i_obs=0;i_obs<obs->nobs;++i_obs){
             fprintf(outfile,"%e ",obs->mean[i_obs]);
         }
+        fprintf(outfile,"%e ",dtime);
         fprintf(outfile,"\n");
         fclose(outfile);
     }
@@ -449,6 +450,28 @@ void ObservableFastPreCal(
     obs_stify = winding_y*winding_y/placeholder->lconf->shape[0]/placeholder->lconf->shape[0]/beta;
 }
 
+void ObservableImproveSpeedPreCal(
+                    SEPlaceHolder* placeholder)
+{
+    int i,j,id;
+    int nsite  = placeholder->lconf->nsite;
+    double mz=0;
+
+    LatticeConfSynchronizeSigma(placeholder->lconf);
+
+    if(placeholder->lconf->dims==2){
+        int xlen = placeholder->lconf->shape[0];
+        mz=0;
+        for(id=0;id<nsite;++id){
+            i = id/xlen;
+            j = id%xlen; 
+            mz+= (((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[id];
+        }
+        obs_m1 = fabs(mz)/nsite*0.5;
+        obs_m2 = mz*mz/nsite/nsite*0.25;
+        obs_m4 = mz*mz*mz*mz/nsite/nsite/nsite/nsite*0.0625;
+    }
+}
 double ObservableFastAntiferroOrder1(
                     SEPlaceHolder* placeholder,
                     void* args)
