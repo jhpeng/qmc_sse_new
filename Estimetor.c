@@ -181,6 +181,7 @@ void ObservableShow(
             fprintf(outfile,"%e ",obs->mean[i_obs]);
         }
         fprintf(outfile,"%e ",dtime);
+        fprintf(outfile,"%d ",placeholder->ops->noo);
         fprintf(outfile,"\n");
         fclose(outfile);
     }
