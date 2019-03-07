@@ -39,6 +39,18 @@ void MCBetaIncreasePlaquetteDisorder2D(
             int cutoff, 
             int seed);
 
+void MCBetaIncreasePlaquetteDisorderImproveSpeed2D(
+            double J,
+            double dJ,
+            double p,
+            double beta_i, 
+            double beta_f, 
+            double interval, 
+            int* shape, 
+            int nsweep, 
+            int cutoff, 
+            int seed);
+
 void MCBetaIncreaseConfigurationalDisorder2D(
             double J, 
             double beta_i, 
