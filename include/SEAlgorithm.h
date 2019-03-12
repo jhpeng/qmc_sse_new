@@ -82,4 +82,7 @@ void SEPlaceHolderSetPlaquetteRandom2D(
 void SEPlaceHolderSetConfigurationalDisorder2D(
                     SEPlaceHolder* placeholder, 
                     double J);
+
+void SEPlaceHolderBetaDoubling(SEPlaceHolder* placeholder);
+
 #endif

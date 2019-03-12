@@ -21,6 +21,7 @@ static double interv=0.5;
 static int thermal=20000;
 static int nsweep=2000;
 static int nblock=50;
+static int ntime=5;
 static int seed=0;
 static int help=0;
 
@@ -29,7 +30,7 @@ void SetupFromArgument(int argc, char** argv)
 {
     int c;
 
-    while((c=getopt(argc,argv,"hx:y:D:m:j:b:t:n:s:i:f:v:p:d:k:"))!=-1){
+    while((c=getopt(argc,argv,"hx:y:D:m:j:b:t:n:s:i:f:v:p:d:k:e:"))!=-1){
         switch(c){
             case 'h':
                 help=1;
@@ -43,9 +44,10 @@ void SetupFromArgument(int argc, char** argv)
                 printf("\t\tmode=1 : herringbond (normal scheme)\n");
                 printf("\t\tmode=2 : plaquette disorder (beta increase scheme)\n");
                 printf("\t\tmode=3 : configurational disorder (beta increase scheme)\n");
-                printf("\t\tmode=4 : plaquette disorder (zero tempereture)\n");
+                printf("\t\tmode=4 : plaquette disorder (beta doubling scheme)\n");
                 printf("\t\tmode=5 : herringbond (speed improved scheme)\n");
                 printf("\t\tmode=6 : plaquette disorder (beta increase and speed improved scheme)\n");
+                printf("\t\tmode=4 : herringbond disorder (beta doubling scheme)\n");
                 printf("\t-j <bond ratio> default 1\n");
                 printf("\t-b <beta> default 4\n");
                 printf("\t-i <beta_i>   default 1\n");
@@ -56,6 +58,7 @@ void SetupFromArgument(int argc, char** argv)
                 printf("\t-t <nsweep for thermal> default 20000\n");
                 printf("\t-n <nsweep for estimetor> default 2000\n");
                 printf("\t-k <nblock for estimetor> default 50\n");
+                printf("\t-e <ntime for beta doubling> default 5\n");
                 printf("\t-s <random seed> default 0\n");
                 return;
             case 'x':
@@ -102,6 +105,9 @@ void SetupFromArgument(int argc, char** argv)
                 break;
             case 'k':
                 nblock=atoi(optarg);
+                break;
+            case 'e':
+                ntime=atoi(optarg);
                 break;
             case 's':
                 seed=atoi(optarg);
@@ -153,7 +159,7 @@ void Execute()
             int shape[2];
             shape[0]=lx;
             shape[1]=ly;
-            MCZeroTempPlaquetteDisorder2D(J,dJ,p,beta,shape,nsweep,thermal,seed);
+            MCZeroTempPlaquetteDisorder2D(J,dJ,p,beta,shape,nsweep,thermal,ntime,seed);
         }
         else if(mode==5){
             int shape[2];
@@ -166,6 +172,12 @@ void Execute()
             shape[0]=lx;
             shape[1]=ly;
             MCBetaIncreasePlaquetteDisorderImproveSpeed2D(J,dJ,p,beta_i,beta_f,interv,shape,nsweep,thermal,seed);
+        }
+        else if(mode==7){
+            int shape[2];
+            shape[0]=lx;
+            shape[1]=ly;
+            MCZeroTempHerringbondDisorder2D(J,dJ,p,beta,shape,nsweep,thermal,ntime,seed);
         }
         else{
             printf("Execute : Can not support mode=%d now\n",mode);

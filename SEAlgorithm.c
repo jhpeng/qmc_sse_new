@@ -34,6 +34,22 @@ void OperatorSequenceSort(OperatorSequence* ops)
     }
 }
 
+OperatorSequence* OperatorSequenceDoubling(OperatorSequence* ops)
+{
+    int length = ops->length;
+    int ndiff  = ops->ndiff;
+    OperatorSequence* ops_new = CreateOperatorSequence(2*length,ndiff);
+
+    for(int i=0;i<2*length;++i){
+        ops_new->sequence->data[i] = ops->sequence->data[i%length];
+    }
+
+    OperatorSequenceSort(ops);
+    DestroyOperatorSequence(ops);
+
+    return ops_new;
+}
+
 void SEOps2Lvc(
                     OperatorLoop* opl,
                     LatticeConf* lconf,
@@ -584,6 +600,16 @@ void SEPlaceHolderSetConfigurationalDisorder2D(SEPlaceHolder* placeholder, doubl
             if(j==0) placeholder->lconf->J->data[bond]=J;
         }
     }
+}
+
+void SEPlaceHolderBetaDoubling(SEPlaceHolder* placeholder)
+{
+    placeholder->length = placeholder->length*2;
+    placeholder->beta = placeholder->beta*2;
+
+    placeholder->ops = OperatorSequenceDoubling(placeholder->ops);
+    DestroyOperatorLoop(placeholder->opl);
+    placeholder->opl = CreateOperatorLoop(placeholder->length);
 }
 
 #if 0

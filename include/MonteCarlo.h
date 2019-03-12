@@ -68,7 +68,19 @@ void MCZeroTempPlaquetteDisorder2D(
             double beta, 
             int* shape, 
             int nsweep, 
-            int cutoff, 
+            int cutoff,
+            int ntime, 
+            int seed);
+
+void MCZeroTempHerringbondDisorder2D(
+            double J, 
+            double dJ, 
+            double p, 
+            double beta, 
+            int* shape, 
+            int nsweep, 
+            int cutoff,
+            int ntime, 
             int seed);
 
 #endif
