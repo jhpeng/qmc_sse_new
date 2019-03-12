@@ -619,6 +619,7 @@ void MCZeroTempPlaquetteDisorder2D(double J, double dJ, double p, double beta, i
             ObservableFastPreCal(placeholder);
             ObservableDoMeasurement(obs,placeholder);
 
+            SEPlaceHolderLengthMonitor(placeholder, buffer);
             placeholder->isweep++;
             j++;
         }
@@ -698,6 +699,7 @@ void MCZeroTempHerringbondDisorder2D(double J, double dJ, double p, double beta,
             ObservableFastPreCal(placeholder);
             ObservableDoMeasurement(obs,placeholder);
 
+            SEPlaceHolderLengthMonitor(placeholder, buffer);
             placeholder->isweep++;
             j++;
         }
