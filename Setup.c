@@ -47,7 +47,7 @@ void SetupFromArgument(int argc, char** argv)
                 printf("\t\tmode=4 : plaquette disorder (beta doubling scheme)\n");
                 printf("\t\tmode=5 : herringbond (speed improved scheme)\n");
                 printf("\t\tmode=6 : plaquette disorder (beta increase and speed improved scheme)\n");
-                printf("\t\tmode=4 : herringbond disorder (beta doubling scheme)\n");
+                printf("\t\tmode=7 : herringbond disorder (beta doubling scheme)\n");
                 printf("\t-j <bond ratio> default 1\n");
                 printf("\t-b <beta> default 4\n");
                 printf("\t-i <beta_i>   default 1\n");
