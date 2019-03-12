@@ -600,7 +600,7 @@ void MCZeroTempPlaquetteDisorder2D(double J, double dJ, double p, double beta, i
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
 
-    for(int k=0;k<ntime;k++){
+    for(int k=0;k<ntime*2;k++){
         int j=0;
         for(j=0;j<cutoff;j++){
             MCDiagonalOperatorUpdate(placeholder);
@@ -623,7 +623,7 @@ void MCZeroTempPlaquetteDisorder2D(double J, double dJ, double p, double beta, i
             j++;
         }
         ObservableShow(obs,placeholder,prefix,4);
-        SEPlaceHolderBetaDoubling(placeholder);
+        if(k%2==1) SEPlaceHolderBetaDoubling(placeholder);
     }
 
     if(0){
@@ -679,7 +679,7 @@ void MCZeroTempHerringbondDisorder2D(double J, double dJ, double p, double beta,
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
     ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
 
-    for(int k=0;k<ntime;k++){
+    for(int k=0;k<ntime*2;k++){
         int j=0;
         for(j=0;j<cutoff;j++){
             MCDiagonalOperatorUpdate(placeholder);
@@ -702,7 +702,7 @@ void MCZeroTempHerringbondDisorder2D(double J, double dJ, double p, double beta,
             j++;
         }
         ObservableShow(obs,placeholder,prefix,4);
-        SEPlaceHolderBetaDoubling(placeholder);
+        if(k%2==1) SEPlaceHolderBetaDoubling(placeholder);
     }
 
     if(0){
