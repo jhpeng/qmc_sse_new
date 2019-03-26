@@ -105,6 +105,15 @@ void ObservableShow(
     obs->end=clock();
     double dtime = difftime(obs->end,obs->start)/CLOCKS_PER_SEC;
     MeanAverage(obs);
+
+    double J_ave = 0;
+    int Nb = placeholder->lconf->Nb;
+
+    for(int i=0;i<Nb;++i){
+        J_ave += placeholder->lconf->J->data[i];
+    }
+    J_ave = J_ave/Nb;
+
     //if model=0 : std output
     //if model=1 : output a text file
     //if model=2 : output a html file
@@ -181,7 +190,7 @@ void ObservableShow(
             fprintf(outfile,"%e ",obs->mean[i_obs]);
         }
         fprintf(outfile,"%e ",dtime);
-        fprintf(outfile,"%d ",placeholder->ops->noo);
+        fprintf(outfile,"%e ",J_ave);
         fprintf(outfile,"\n");
         fclose(outfile);
     }
