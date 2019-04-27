@@ -506,13 +506,17 @@ void SEPlaceHolderSetHerringbondRandom2D(SEPlaceHolder* placeholder, double Jc, 
         printf("SEPlaceHolderSetDisorder2D : lx and ly must be multiple of 4!\n");
         exit(-1);
     }
+    else if((dJ>1)&&(dJ<0)){
+        printf("SEPlaceHolderSetDisorder2D : dJ must between 0 to 1!\n");
+        exit(-1);
+    }
 
     for(bond=0;bond<nsite;++bond){
         placeholder->lconf->J->data[bond]=1;
         i = (bond%placeholder->lconf->shape[0])%4;
         j = (bond/placeholder->lconf->shape[0])%4;
-        if(gsl_rng_uniform_pos(placeholder->rng)<p) J=Jc*(1+dJ);
-        else J=Jc*(1-dJ);
+        if(gsl_rng_uniform_pos(placeholder->rng)<p) J=1+(Jc-1)*(1+dJ);
+        else J=1+(Jc-1)*(1-dJ);
         if(i==1 && j==0) placeholder->lconf->J->data[bond]=J;
         else if(i==2 && j==1) placeholder->lconf->J->data[bond]=J;
         else if(i==3 && j==2) placeholder->lconf->J->data[bond]=J;
@@ -522,8 +526,8 @@ void SEPlaceHolderSetHerringbondRandom2D(SEPlaceHolder* placeholder, double Jc, 
         placeholder->lconf->J->data[bond]=1;
         i = ((bond-nsite)%placeholder->lconf->shape[0])%4;
         j = ((bond-nsite)/placeholder->lconf->shape[0])%4;
-        if(gsl_rng_uniform_pos(placeholder->rng)<p) J=Jc*(1+dJ);
-        else J=Jc*(1-dJ);
+        if(gsl_rng_uniform_pos(placeholder->rng)<p) J=1+(Jc-1)*(1+dJ);
+        else J=1+(Jc-1)*(1-dJ);
         if(i==0 && j==0) placeholder->lconf->J->data[bond]=J;
         else if(i==1 && j==1) placeholder->lconf->J->data[bond]=J;
         else if(i==2 && j==2) placeholder->lconf->J->data[bond]=J;
