@@ -83,4 +83,16 @@ void MCZeroTempHerringbondDisorder2D(
             int ntime, 
             int seed);
 
+void MCBetaIncreaseHerringboneDisorderImproveSpeed2D(
+            double J,
+            double dJ,
+            double p,
+            double beta_i, 
+            double beta_f, 
+            double interval, 
+            int* shape, 
+            int nsweep, 
+            int cutoff, 
+            int seed);
+
 #endif

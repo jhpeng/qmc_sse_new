@@ -48,6 +48,7 @@ void SetupFromArgument(int argc, char** argv)
                 printf("\t\tmode=5 : herringbond (speed improved scheme)\n");
                 printf("\t\tmode=6 : plaquette disorder (beta increase and speed improved scheme)\n");
                 printf("\t\tmode=7 : herringbond disorder (beta doubling scheme)\n");
+                printf("\t\tmode=8 : herringbond disorder (beta increase and speed improved scheme)\n");
                 printf("\t-j <bond ratio> default 1\n");
                 printf("\t-b <beta> default 4\n");
                 printf("\t-i <beta_i>   default 1\n");
@@ -178,6 +179,12 @@ void Execute()
             shape[0]=lx;
             shape[1]=ly;
             MCZeroTempHerringbondDisorder2D(J,dJ,p,beta,shape,nsweep,thermal,ntime,seed);
+        }
+        else if(mode==8){
+            int shape[2];
+            shape[0]=lx;
+            shape[1]=ly;
+            MCBetaIncreaseHerringboneDisorderImproveSpeed2D(J,dJ,p,beta_i,beta_f,interv,shape,nsweep,thermal,seed);
         }
         else{
             printf("Execute : Can not support mode=%d now\n",mode);
