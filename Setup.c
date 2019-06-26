@@ -207,7 +207,8 @@ int main(int argc, char* argv[])
     shape[0]=lx;
     shape[1]=ly;
     
-    MCGeneralSchemeAndLattice(shape,mode,lattice,J,dJ,p,beta,beta_i,beta_f,interv,thermal,nsweep,nblock,ntime,seed);
+    if(help) return 0;
+    else MCGeneralSchemeAndLattice(shape,mode,lattice,J,dJ,p,beta,beta_i,beta_f,interv,thermal,nsweep,nblock,ntime,seed);
 
     return 0;
 }
