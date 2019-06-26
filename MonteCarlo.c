@@ -858,90 +858,73 @@ void MCBetaIncreaseConfigurationalDisorder2D(double J, double beta_i, double bet
     DestroyMappingList();
 }
 
-#if 0
-int main(int argn, char *argv[])
-{
-    int shape[2]={8,8};
-    double beta=16;
-    int nsweep=1000000,cutoff=20000;
-    int seed=290318;
+void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, double dJ, double p, double beta, double beta_i, double beta_f, double interv, int thermal, int nsweep, int nblock, int ntime, int seed){
+    int ndiff=2,length=1000;
+    int dims=2;
+    double max_err=1.e-4;
+    double buffer=1.5;
+    char prefix[128];
 
-    int i;
-    for(i=0;i<argn;i++){
-        if(i==0) shape[0] = atoi(argv[1]);
-        else if(i==1) shape[1] = atoi(argv[2]);
+    sprintf(prefix,"data/lattice_%d_scheme_%d_shape_%d_%d_J_%.4f_dJ_%.4f_p_%.4f_seed_%d",lattice,mode,shape[0],shape[1],J,dJ,p,seed);
+
+    int Nb=shape[0]*shape[1]*dims;
+    CreateMappingList(mapping_2d,shape,Nb);
+
+    SEPlaceHolder* placeholder = CreateSEPlaceHolder();
+    SEPlaceHolderSetLattice(placeholder,mapping_list,shape,dims,0);
+    SEPlaceHolderSetLength(placeholder,length,ndiff);
+    SEPlaceHolderSetRandomSeed(placeholder, seed);
+    SEPlaceHolderSetNsweep(placeholder, nsweep, thermal);
+    SEPlaceHolderSetError(placeholder, max_err);
+
+    if(lattice==0) SEPlaceHolderSetHerringbondRandom2D(placeholder,J,dJ,p);
+    else if(lattice==1) SEPlaceHolderSetPlaquetteRandom2D(placeholder,J,dJ,p);
+    else if(lattice==2) SEPlaceHolderSetConfigurationalDisorder2D(placeholder,J);
+
+    MCInitializeLatticeConf(placeholder);
+
+/* ----------------------------------------- **
+** -------------- Normal Scheme ------------ **
+** ----------------------------------------- */
+    if(mode==0){
+        SEPlaceHolderSetBeta(placeholder, beta);
+        SEPlaceHolderCheckSetting(placeholder);
+
+        int nobs=8;
+        int nave=nsweep;
+        Observable *obs = CreateObservable(nobs,nave);
+        ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
+        ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
+        ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStiffnessY,"stif_y",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+        
+        for(int j=0;j<thermal;j++){
+            MCDiagonalOperatorUpdate(placeholder);
+            MCOffDiagOperatorUpdate(placeholder);
+            MCFlipUpdate(placeholder);
+            SEPlaceHolderLengthMonitor(placeholder, buffer);
+        }
+        for(int k=0;k<nblock;++k){
+            placeholder->isweep=0;
+            for(int j=0;j<nsweep;++j){
+                MCDiagonalOperatorUpdate(placeholder);
+                MCOffDiagOperatorUpdate(placeholder);
+                MCFlipUpdate(placeholder);
+
+                ObservableFastPreCal(placeholder);
+                ObservableDoMeasurement(obs,placeholder);
+
+                placeholder->isweep++;
+            }
+            ObservableShow(obs,placeholder,prefix,4);
+        }
+        DestroyObservable(obs);
     }
 
-    for(double i=0.5;i<2.5;i=i+0.5){
-        beta = i*shape[0];
-        seed = seed/shape[0]*i;
-        MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
-    }
+    DestroySEPlaceHolder(placeholder);
+    DestroyMappingList();
 }
-#endif
-
-#if 0
-int main()
-{
-    double beta_i=1;
-    double beta_f=3;
-    double interval=0.1;
-    int shape[2]={16,16};
-    int nsweep=4000;
-    int cutoff=2000;
-    int seed=2;
-
-    for(int i=0;i<10;++i){
-        seed+=i;
-        MCBetaIncrease2D(beta_i,beta_f,interval,shape,nsweep,cutoff,seed);
-    }
-
-    return 0;
-}
-#endif
-
-#if 0
-int main(int argn, char *argv[])
-{
-    int shape[2]={16,16};
-    double beta=16;
-    int nsweep=1000000,cutoff=20000;
-    int seed=2318;
-
-    int i;
-    for(i=0;i<argn;i++){
-        if(i==0) shape[0] = atoi(argv[1]);
-        else if(i==1) shape[1] = atoi(argv[2]);
-        else if(i==2) beta = atof(argv[3]);
-        else if(i==3) cutoff = atoi(argv[4]);
-        else if(i==4) nsweep = atoi(argv[5]);
-        else if(i==5) seed = atoi(argv[6]);
-    }
-
-    MCIsotropy2D(beta,shape,nsweep,cutoff,seed);
-}
-#endif
-
-#if 0
-int main(int argn, char *argv[])
-{
-    int shape[2]={16,16};
-    double beta=16;
-    double J=2;
-    int nsweep=1000000,cutoff=20000;
-    int seed=2318;
-
-    int i;
-    for(i=1;i<argn;i++){
-        if(i==1) shape[0] = atoi(argv[1]);
-        else if(i==2) shape[1] = atoi(argv[2]);
-        else if(i==3) J = atof(argv[3]);
-        else if(i==4) beta = atof(argv[4]);
-        else if(i==5) cutoff = atoi(argv[5]);
-        else if(i==6) nsweep = atoi(argv[6]);
-        else if(i==7) seed = atoi(argv[7]);
-    }
-
-    MCDisorder2D(J,beta,shape,nsweep,cutoff,seed);
-}
-#endif

@@ -11,6 +11,7 @@ static int ly=8;
 static int lz=0;
 static int dims=2;
 static int mode=0;
+static int lattice=0;
 static double J=1;
 static double dJ=0.5;
 static double p=0.5;
@@ -30,7 +31,7 @@ void SetupFromArgument(int argc, char** argv)
 {
     int c;
 
-    while((c=getopt(argc,argv,"hx:y:D:m:j:b:t:n:s:i:f:v:p:d:k:e:"))!=-1){
+    while((c=getopt(argc,argv,"hx:y:D:l:m:j:b:t:n:s:i:f:v:p:d:k:e:"))!=-1){
         switch(c){
             case 'h':
                 help=1;
@@ -40,15 +41,13 @@ void SetupFromArgument(int argc, char** argv)
                 printf("\t-y <length of y> default 8\n");
                 printf("\t-z <length of z> default 0\n");
                 printf("\t-m <mode> default 0\n");
-                printf("\t\tmode=0 : disorder (normal sheme)\n");
-                printf("\t\tmode=1 : herringbond (normal scheme)\n");
-                printf("\t\tmode=2 : plaquette disorder (beta increase scheme)\n");
-                printf("\t\tmode=3 : configurational disorder (beta increase scheme)\n");
-                printf("\t\tmode=4 : plaquette disorder (beta doubling scheme)\n");
-                printf("\t\tmode=5 : herringbond (speed improved scheme)\n");
-                printf("\t\tmode=6 : plaquette disorder (beta increase and speed improved scheme)\n");
-                printf("\t\tmode=7 : herringbond disorder (beta doubling scheme)\n");
-                printf("\t\tmode=8 : herringbond disorder (beta increase and speed improved scheme)\n");
+                printf("\t\tmode=0 : normal scheme\n");
+                printf("\t\tmode=1 : zero temp scheme\n");
+                printf("\t\tmode=2 : beta increase scheme\n");
+                printf("\t-l <lattice> default 0\n");
+                printf("\t\tlattice=0 : Herringbone\n");
+                printf("\t\tlattice=1 : Plaquette\n");
+                printf("\t\tlattice=2 : Configurational disorder\n");
                 printf("\t-j <bond ratio> default 1\n");
                 printf("\t-b <beta> default 4\n");
                 printf("\t-i <beta_i>   default 1\n");
@@ -76,6 +75,9 @@ void SetupFromArgument(int argc, char** argv)
                 break;
             case 'm':
                 mode=atoi(optarg);
+                break;
+            case 'l':
+                lattice=atoi(optarg);
                 break;
             case 'j':
                 J=atof(optarg);
@@ -200,7 +202,13 @@ void Execute()
 int main(int argc, char* argv[])
 {
     SetupFromArgument(argc,argv);
-    Execute();
+    //Execute();
+    int shape[2];
+    shape[0]=lx;
+    shape[1]=ly;
+    
+    MCGeneralSchemeAndLattice(shape,mode,lattice,J,dJ,p,beta,beta_i,beta_f,interv,thermal,nsweep,nblock,ntime,seed);
+
     return 0;
 }
 #endif
