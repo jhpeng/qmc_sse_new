@@ -81,5 +81,12 @@ double ObservableFastStiffnessY(
                     SEPlaceHolder* placeholder,
                     void* args);
 
+double ObservableFastStaggeredX(
+                    SEPlaceHolder* placeholder,
+                    void* args);
+
+double ObservableFastStaggeredY(
+                    SEPlaceHolder* placeholder,
+                    void* args);
 
 #endif

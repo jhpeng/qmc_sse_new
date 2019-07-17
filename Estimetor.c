@@ -399,7 +399,7 @@ double ObservableAntiferroOrder4(
     return m4;
 }
 
-static double obs_m1,obs_m2,obs_m4,obs_stifx,obs_stify;
+static double obs_m1,obs_m2,obs_m4,obs_stifx,obs_stify,obs_msx,obs_msy;
 void ObservableFastPreCal(
                     SEPlaceHolder* placeholder)
 {
@@ -415,17 +415,29 @@ void ObservableFastPreCal(
     double m4=0;
     double winding_x=0;
     double winding_y=0;
+    double sir,sii,msxr=0,msxi=0,msyr=0,msyi=0;
 
     LatticeConfSynchronizeSigma(placeholder->lconf);
 
     if(placeholder->lconf->dims==2){
         int xlen = placeholder->lconf->shape[0];
+        int ylen = placeholder->lconf->shape[1];
         mz=0;
         for(id=0;id<nsite;++id){
             i = id/xlen;
             j = id%xlen; 
             mz+= (((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[id];
+            sir = cos((M_PI+2*M_PI/xlen)*j+M_PI*i);
+            sii = sin((M_PI+2*M_PI/xlen)*j+M_PI*i);
+            msxr+= sir*placeholder->lconf->sigmap->data[id];
+            msxi+= sii*placeholder->lconf->sigmap->data[id];
+            sir = cos((M_PI+2*M_PI/ylen)*i+M_PI*j);
+            sii = sin((M_PI+2*M_PI/ylen)*i+M_PI*j);
+            msyr+= sir*placeholder->lconf->sigmap->data[id];
+            msyi+= sii*placeholder->lconf->sigmap->data[id];
         }
+        obs_msx = (msxr*msxr+msxi*msxi)/nsite/nsite*0.25;
+        obs_msy = (msyr*msyr+msyi*msyi)/nsite/nsite*0.25;
         for(p=0;p<length;++p){
             m1+=fabs(mz);
             m2+=mz*mz;
@@ -515,4 +527,18 @@ double ObservableFastStiffnessY(
                     void* args)
 {
     return obs_stify;
+}
+
+double ObservableFastStaggeredX(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    return obs_msx;
+}
+
+double ObservableFastStaggeredY(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    return obs_msy;
 }
