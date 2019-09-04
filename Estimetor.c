@@ -209,6 +209,24 @@ double ObservableSpecificEnergy(
     return senergy;
 }
 
+double ObservableNoo1(
+                    SEPlaceHolder* placeholder, 
+                    void* args)
+{
+    int noo = placeholder->ops->noo;
+
+    return (double)noo;
+}
+
+double ObservableNoo2(
+                    SEPlaceHolder* placeholder, 
+                    void* args)
+{
+    int noo = placeholder->ops->noo;
+
+    return (double)(noo*noo);
+}
+
 double ObservableMagnetization(
                     SEPlaceHolder* placeholder,
                     void* args)

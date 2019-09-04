@@ -21,7 +21,7 @@ static double beta_f=3.0;
 static double interv=0.5;
 static int thermal=20000;
 static int nsweep=2000;
-static int nblock=50;
+static int nblock=1;
 static int ntime=5;
 static int seed=0;
 static int help=0;
@@ -44,6 +44,7 @@ void SetupFromArgument(int argc, char** argv)
                 printf("\t\tmode=0 : normal scheme\n");
                 printf("\t\tmode=1 : zero temp scheme\n");
                 printf("\t\tmode=2 : beta increase scheme\n");
+                printf("\t\tmode=3 : beta increase scheme(specific heat)\n");
                 printf("\t-l <lattice> default 0\n");
                 printf("\t\tlattice=0 : Herringbone\n");
                 printf("\t\tlattice=1 : Plaquette\n");

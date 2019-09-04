@@ -955,18 +955,20 @@ void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, doub
                 SEPlaceHolderLengthMonitor(placeholder, buffer);
             }
 
-            placeholder->isweep=0;
-            for(int j=0;j<nsweep;++j){
-                MCDiagonalOperatorUpdate(placeholder);
-                MCOffDiagOperatorUpdate(placeholder);
-                MCFlipUpdate(placeholder);
+            for(int i_b=0;i_b<nblock;++i_b){
+                placeholder->isweep=0;
+                for(int j=0;j<nsweep;++j){
+                    MCDiagonalOperatorUpdate(placeholder);
+                    MCOffDiagOperatorUpdate(placeholder);
+                    MCFlipUpdate(placeholder);
 
-                ObservableFastPreCal(placeholder);
-                ObservableDoMeasurement(obs,placeholder);
+                    ObservableFastPreCal(placeholder);
+                    ObservableDoMeasurement(obs,placeholder);
 
-                placeholder->isweep++;
+                    placeholder->isweep++;
+                }
+                ObservableShow(obs,placeholder,prefix,4);
             }
-            ObservableShow(obs,placeholder,prefix,4);
             if(k%2==1) SEPlaceHolderBetaDoubling(placeholder);
         }
         DestroyObservable(obs);
@@ -1011,6 +1013,48 @@ void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, doub
         }
         DestroyObservable(obs);
     }
+/* ------------------------------------------- **
+** ---- Beta Increase with specific heat ----- **
+** ------------------------------------------- */
+    else if(mode==3){
+        int nobs=7;
+        int nave=nsweep;
+        Observable *obs = CreateObservable(nobs,nave);
+        ObservableSetMeasurement(obs,ObservableNoo1,"noo1",NULL);
+        ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
+        ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
+        ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+        ObservableSetMeasurement(obs,ObservableNoo2,"noo2",NULL);
+        
+        for(beta=beta_i;beta<beta_f;beta+=interv){
+            SEPlaceHolderSetBeta(placeholder, beta);
+            SEPlaceHolderCheckSetting(placeholder);
+
+            for(int j=0;j<thermal;j++){
+                MCDiagonalOperatorUpdate(placeholder);
+                MCOffDiagOperatorUpdate(placeholder);
+                MCFlipUpdate(placeholder);
+                SEPlaceHolderLengthMonitor(placeholder, buffer);
+            }
+
+            placeholder->isweep=0;
+            for(int j=0;j<nsweep;++j){
+                MCDiagonalOperatorUpdate(placeholder);
+                MCOffDiagOperatorUpdate(placeholder);
+                MCFlipUpdate(placeholder);
+
+                ObservableImproveSpeedPreCal(placeholder);
+                ObservableDoMeasurement(obs,placeholder);
+
+                placeholder->isweep++;
+            }
+            ObservableShow(obs,placeholder,prefix,4);
+        }
+        DestroyObservable(obs);
+    }
+
 
     DestroySEPlaceHolder(placeholder);
     DestroyMappingList();

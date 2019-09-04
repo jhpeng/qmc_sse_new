@@ -39,6 +39,14 @@ double ObservableSusceptibility(
                     SEPlaceHolder* placeholder,
                     void* args);
 
+double ObservableNoo1(
+                    SEPlaceHolder* placeholder, 
+                    void* args);
+
+double ObservableNoo2(
+                    SEPlaceHolder* placeholder, 
+                    void* args);
+
 double ObservableStiffnessX(
                     SEPlaceHolder* placeholder,
                     void* args);
