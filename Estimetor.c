@@ -496,17 +496,29 @@ void ObservableImproveSpeedPreCal(
     int i,j,id;
     int nsite  = placeholder->lconf->nsite;
     double mz=0;
+    double sir,sii,msxr=0,msxi=0,msyr=0,msyi=0;
 
     LatticeConfSynchronizeSigma(placeholder->lconf);
 
     if(placeholder->lconf->dims==2){
         int xlen = placeholder->lconf->shape[0];
+        int ylen = placeholder->lconf->shape[1];
         mz=0;
         for(id=0;id<nsite;++id){
             i = id/xlen;
             j = id%xlen; 
             mz+= (((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[id];
+            sir = cos((M_PI+2*M_PI/xlen)*j+M_PI*i);
+            sii = sin((M_PI+2*M_PI/xlen)*j+M_PI*i);
+            msxr+= sir*placeholder->lconf->sigmap->data[id];
+            msxi+= sii*placeholder->lconf->sigmap->data[id];
+            sir = cos((M_PI+2*M_PI/ylen)*i+M_PI*j);
+            sii = sin((M_PI+2*M_PI/ylen)*i+M_PI*j);
+            msyr+= sir*placeholder->lconf->sigmap->data[id];
+            msyi+= sii*placeholder->lconf->sigmap->data[id];
         }
+        obs_msx = (msxr*msxr+msxi*msxi)/nsite/nsite*0.25;
+        obs_msy = (msyr*msyr+msyi*msyi)/nsite/nsite*0.25;
         obs_m1 = fabs(mz)/nsite*0.5;
         obs_m2 = mz*mz/nsite/nsite*0.25;
         obs_m4 = mz*mz*mz*mz/nsite/nsite/nsite/nsite*0.0625;
