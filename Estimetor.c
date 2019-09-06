@@ -222,9 +222,9 @@ double ObservableNoo2(
                     SEPlaceHolder* placeholder, 
                     void* args)
 {
-    int noo = placeholder->ops->noo;
+    double noo = (double)placeholder->ops->noo;
 
-    return (double)(noo*noo);
+    return noo*noo;
 }
 
 double ObservableMagnetization(
