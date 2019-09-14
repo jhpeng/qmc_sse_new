@@ -588,20 +588,23 @@ void SEPlaceHolderSetConfigurationalDisorder2D(SEPlaceHolder* placeholder, doubl
         exit(-1);
     }
 
-    if(gsl_rng_uniform_pos(placeholder->rng)<0.5){
-        for(bond=0;bond<nsite;++bond){
-            placeholder->lconf->J->data[bond]=1;
-            i = (bond%placeholder->lconf->shape[0])%2;
-            j = (bond/placeholder->lconf->shape[0])%2;
-            if(i==0) placeholder->lconf->J->data[bond]=J;
+    for(bond=0;bond<2*nsite;++bond) placeholder->lconf->J->data[bond]=1;
+    for(int b=0;b<(nsite/4);++b){
+        if(gsl_rng_uniform_pos(placeholder->rng)<0.5){
+            i = (b*2)%placeholder->lconf->shape[0];
+            j = ((b*2)/placeholder->lconf->shape[0])*2;
+            bond = i+j*placeholder->lconf->shape[0];
+            placeholder->lconf->J->data[bond]=J;
+            bond = i+(j+1)*placeholder->lconf->shape[0];
+            placeholder->lconf->J->data[bond]=J;
         }
-    }
-    else{
-        for(bond=nsite;bond<(2*nsite);++bond){
-            placeholder->lconf->J->data[bond]=1;
-            i = (bond%placeholder->lconf->shape[0])%2;
-            j = (bond/placeholder->lconf->shape[0])%2;
-            if(j==0) placeholder->lconf->J->data[bond]=J;
+        else{
+            i = (b*2)%placeholder->lconf->shape[0];
+            j = ((b*2)/placeholder->lconf->shape[0])*2;
+            bond = i+j*placeholder->lconf->shape[0]+nsite;
+            placeholder->lconf->J->data[bond]=J;
+            bond = (i+1)+j*placeholder->lconf->shape[0]+nsite;
+            placeholder->lconf->J->data[bond]=J;
         }
     }
 }
