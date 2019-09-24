@@ -187,7 +187,7 @@ void ObservableShow(
         int i_obs;
         fprintf(outfile,"%e ",placeholder->beta);
         for(i_obs=0;i_obs<obs->nobs;++i_obs){
-            fprintf(outfile,"%e ",obs->mean[i_obs]);
+            fprintf(outfile,"%.16e ",obs->mean[i_obs]);
         }
         fprintf(outfile,"%e ",dtime);
         fprintf(outfile,"%e ",J_ave);
