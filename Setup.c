@@ -6,6 +6,7 @@
 
 #include "MonteCarlo.h"
 
+
 static int lx=8;
 static int ly=8;
 static int lz=0;
