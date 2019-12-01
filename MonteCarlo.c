@@ -890,19 +890,21 @@ void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, doub
         SEPlaceHolderSetBeta(placeholder, beta);
         SEPlaceHolderCheckSetting(placeholder);
 
-        int nobs=8;
+        int nobs=12;
         int nave=nsweep;
         Observable *obs = CreateObservable(nobs,nave);
         ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
         ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
-        //ObservableSetMeasurement(obs,ObservableFastStaggeredX,"stag_x",NULL);
-        //ObservableSetMeasurement(obs,ObservableFastStaggeredY,"stag_y",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStaggeredX,"stag_x",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStaggeredY,"stag_y",NULL);
         ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
         ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
         ObservableSetMeasurement(obs,ObservableFastStiffnessY,"stif_y",NULL);
         ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
         ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
         ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+        ObservableSetMeasurement(obs,ObservableNoo1,"noo1",NULL);
+        ObservableSetMeasurement(obs,ObservableNoo2,"noo2",NULL);
         
         for(int j=0;j<thermal;j++){
             MCDiagonalOperatorUpdate(placeholder);
