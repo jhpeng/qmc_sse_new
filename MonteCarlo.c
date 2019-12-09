@@ -887,6 +887,8 @@ void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, doub
 ** -------------- Normal Scheme -------------- **
 ** ------------------------------------------- */
     if(mode==0){
+        sprintf(prefix,"data/lattice_%d_scheme_%d_shape_%d_%d_J_%.4f_b_%.4f_dJ_%.4f_p_%.4f_seed_%d",lattice,mode,shape[0],shape[1],J,beta,dJ,p,seed);
+
         SEPlaceHolderSetBeta(placeholder, beta);
         SEPlaceHolderCheckSetting(placeholder);
 
