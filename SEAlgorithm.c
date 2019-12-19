@@ -619,6 +619,25 @@ void SEPlaceHolderBetaDoubling(SEPlaceHolder* placeholder)
     placeholder->opl = CreateOperatorLoop(placeholder->length);
 }
 
+void SESaveConfiguration(SEPlaceHolder* placeholder, char* prefix)
+{
+    int i,sigma;
+    int nsite = placeholder->lconf->nsite;
+    //int Nb    = placeholder->lconf->Nb;
+    char filename[128];
+
+    sprintf(filename,"%s_conf.txt",prefix);
+
+    FILE* outfile = fopen(filename,"a");
+    
+    for(i=0;i<nsite;++i){
+        sigma = placeholder->lconf->sigma0->data[i];
+        fprintf(outfile,"%d ",sigma);
+    }
+    fprintf(outfile,"\n");
+    fclose(outfile);
+}
+
 #if 0
 int main()
 {

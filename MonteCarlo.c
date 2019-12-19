@@ -923,6 +923,7 @@ void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, doub
 
                 ObservableFastPreCal(placeholder);
                 ObservableDoMeasurement(obs,placeholder);
+                SESaveConfiguration(placeholder,prefix);
 
                 placeholder->isweep++;
             }

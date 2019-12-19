@@ -85,4 +85,8 @@ void SEPlaceHolderSetConfigurationalDisorder2D(
 
 void SEPlaceHolderBetaDoubling(SEPlaceHolder* placeholder);
 
+void SESaveConfiguration(
+                    SEPlaceHolder* placeholder, 
+                    char* prefix);
+
 #endif
