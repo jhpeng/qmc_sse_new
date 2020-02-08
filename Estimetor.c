@@ -108,11 +108,12 @@ void ObservableShow(
 
     double J_ave = 0;
     int Nb = placeholder->lconf->Nb;
+    int nsite = placeholder->lconf->nsite;
 
     for(int i=0;i<Nb;++i){
         J_ave += placeholder->lconf->J->data[i];
     }
-    J_ave = J_ave/Nb;
+    J_ave = J_ave/nsite;
 
     //if model=0 : std output
     //if model=1 : output a text file
