@@ -491,6 +491,82 @@ void ObservableFastPreCal(
     obs_stify = winding_y*winding_y/placeholder->lconf->shape[0]/placeholder->lconf->shape[0]/beta;
 }
 
+double obs_var_q_ms;
+void ObservableQuantumCorrelator(
+                    SEPlaceHolder* placeholder)
+{
+    int i,j,id,p,bond,type;
+    int left,right;
+    int nsite  = placeholder->lconf->nsite;
+    int length = placeholder->ops->length;
+    int ndiff  = placeholder->ops->ndiff;
+    double beta = placeholder->beta;
+    double mz=0;
+    double m1=0;
+    double m2=0;
+    double m4=0;
+    double var_q_ms=0;
+    double winding_x=0;
+    double winding_y=0;
+    double sir,sii,msxr=0,msxi=0,msyr=0,msyi=0;
+
+    LatticeConfSynchronizeSigma(placeholder->lconf);
+
+    if(placeholder->lconf->dims==2){
+        int xlen = placeholder->lconf->shape[0];
+        int ylen = placeholder->lconf->shape[1];
+        mz=0;
+        for(id=0;id<nsite;++id){
+            i = id/xlen;
+            j = id%xlen; 
+            mz+= (((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[id];
+            sir = cos((M_PI+2*M_PI/xlen)*j+M_PI*i);
+            sii = sin((M_PI+2*M_PI/xlen)*j+M_PI*i);
+            msxr+= sir*placeholder->lconf->sigmap->data[id];
+            msxi+= sii*placeholder->lconf->sigmap->data[id];
+            sir = cos((M_PI+2*M_PI/ylen)*i+M_PI*j);
+            sii = sin((M_PI+2*M_PI/ylen)*i+M_PI*j);
+            msyr+= sir*placeholder->lconf->sigmap->data[id];
+            msyi+= sii*placeholder->lconf->sigmap->data[id];
+        }
+        obs_msx = (msxr*msxr+msxi*msxi)/nsite/nsite*0.25;
+        obs_msy = (msyr*msyr+msyi*msyi)/nsite/nsite*0.25;
+        for(p=0;p<length;++p){
+            var_q_ms+=mz;
+            m1+=fabs(mz);
+            m2+=mz*mz;
+            m4+=mz*mz*mz*mz;
+            if(placeholder->ops->sequence->data[p]!=-1){
+                type = placeholder->ops->sequence->data[p]%ndiff;
+                if(type==1){
+                    bond = placeholder->ops->sequence->data[p]/ndiff;
+                    LatticeConfApplyMapping(placeholder->lconf,bond);
+                    left  = placeholder->lconf->left;
+                    right = placeholder->lconf->right;
+                    i = left/xlen;
+                    j = left%xlen;
+                    mz-=4*(((i+j)%2)*2-1)*placeholder->lconf->sigmap->data[left];
+                    if(bond<nsite){
+                        winding_x += placeholder->lconf->sigmap->data[left];
+                    }
+                    else if(bond<2*nsite){
+                        winding_y += placeholder->lconf->sigmap->data[left];
+                    }
+                    placeholder->lconf->sigmap->data[left]*=-1;
+                    placeholder->lconf->sigmap->data[right]*=-1;
+                }
+            }
+        }
+    }
+
+    obs_var_q_ms = (var_q_ms/nsite*0.5)*(var_q_ms/nsite*0.5)/length/(length+1);
+    obs_m1 = m1/length/nsite*0.5;
+    obs_m2 = m2/length/nsite/nsite*0.25;
+    obs_m4 = m4/length/nsite/nsite/nsite/nsite*0.0625;
+    obs_stifx = winding_x*winding_x/placeholder->lconf->shape[0]/placeholder->lconf->shape[0]/beta;
+    obs_stify = winding_y*winding_y/placeholder->lconf->shape[0]/placeholder->lconf->shape[0]/beta;
+}
+
 void ObservableImproveSpeedPreCal(
                     SEPlaceHolder* placeholder)
 {
@@ -525,6 +601,7 @@ void ObservableImproveSpeedPreCal(
         obs_m4 = mz*mz*mz*mz/nsite/nsite/nsite/nsite*0.0625;
     }
 }
+
 double ObservableFastAntiferroOrder1(
                     SEPlaceHolder* placeholder,
                     void* args)
@@ -572,4 +649,11 @@ double ObservableFastStaggeredY(
                     void* args)
 {
     return obs_msy;
+}
+
+double ObservableFastQuantumVariance(
+                    SEPlaceHolder* placeholder,
+                    void* args)
+{
+    return obs_var_q_ms;
 }

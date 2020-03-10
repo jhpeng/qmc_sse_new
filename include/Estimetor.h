@@ -66,6 +66,9 @@ double ObservableAntiferroOrder4(
 void ObservableFastPreCal(
                     SEPlaceHolder* placeholder);
 
+void ObservableQuantumCorrelator(
+                    SEPlaceHolder* placeholder);
+
 void ObservableImproveSpeedPreCal(
                     SEPlaceHolder* placeholder);
 
@@ -94,6 +97,10 @@ double ObservableFastStaggeredX(
                     void* args);
 
 double ObservableFastStaggeredY(
+                    SEPlaceHolder* placeholder,
+                    void* args);
+
+double ObservableFastQuantumVariance(
                     SEPlaceHolder* placeholder,
                     void* args);
 
