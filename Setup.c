@@ -47,6 +47,7 @@ void SetupFromArgument(int argc, char** argv)
                 printf("\t\tmode=2 : beta increase scheme\n");
                 printf("\t\tmode=3 : beta increase scheme(specific heat)\n");
                 printf("\t\tmode=4 : quantum correlator(zero temp scheme)\n");
+                printf("\t\tmode=5 : beta increase scheme(specific heat, increase nsweep)\n");
                 printf("\t-l <lattice> default 0\n");
                 printf("\t\tlattice=0 : Herringbone\n");
                 printf("\t\tlattice=1 : Plaquette\n");

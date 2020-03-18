@@ -1131,6 +1131,71 @@ void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, doub
         }
         DestroyObservable(obs);
     }
+/* ------------------------------------------- **
+** ---- Beta Increase with specific heat ----- **
+** ------------------------------------------- */
+    else if(mode==5){
+        
+        for(beta=beta_i;beta<beta_f;beta+=interv){
+            int nobs=9;
+            int nave=(int)(nsweep*beta);
+            SEPlaceHolderSetNsweep(placeholder, nave, thermal);
+
+            Observable *obs = CreateObservable(nobs,nave);
+            ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
+            ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
+            ObservableSetMeasurement(obs,ObservableFastAntiferroOrder1,"mz_1",NULL);
+            ObservableSetMeasurement(obs,ObservableFastAntiferroOrder2,"mz_2",NULL);
+            ObservableSetMeasurement(obs,ObservableFastAntiferroOrder4,"mz_4",NULL);
+            ObservableSetMeasurement(obs,ObservableNoo1,"noo1",NULL);
+            ObservableSetMeasurement(obs,ObservableNoo2,"noo2",NULL);
+            ObservableSetMeasurement(obs,ObservableFastStaggeredX,"stag_x",NULL);
+            ObservableSetMeasurement(obs,ObservableFastStaggeredY,"stag_y",NULL);
+            SEPlaceHolderSetBeta(placeholder, beta);
+            SEPlaceHolderCheckSetting(placeholder);
+
+            for(int j=0;j<thermal;j++){
+                MCDiagonalOperatorUpdate(placeholder);
+                MCOffDiagOperatorUpdate(placeholder);
+                MCFlipUpdate(placeholder);
+                SEPlaceHolderLengthMonitor(placeholder, buffer);
+            }
+
+            placeholder->isweep=0;
+            for(int j=0;j<nave;++j){
+                MCDiagonalOperatorUpdate(placeholder);
+                MCOffDiagOperatorUpdate(placeholder);
+                MCFlipUpdate(placeholder);
+
+                ObservableImproveSpeedPreCal(placeholder);
+                ObservableDoMeasurement(obs,placeholder);
+
+                placeholder->isweep++;
+            }
+            ObservableShow(obs,placeholder,prefix,4);
+
+            for(int j=0;j<thermal;j++){
+                MCDiagonalOperatorUpdate(placeholder);
+                MCOffDiagOperatorUpdate(placeholder);
+                MCFlipUpdate(placeholder);
+                SEPlaceHolderLengthMonitor(placeholder, buffer);
+            }
+
+            placeholder->isweep=0;
+            for(int j=0;j<nave;++j){
+                MCDiagonalOperatorUpdate(placeholder);
+                MCOffDiagOperatorUpdate(placeholder);
+                MCFlipUpdate(placeholder);
+
+                ObservableImproveSpeedPreCal(placeholder);
+                ObservableDoMeasurement(obs,placeholder);
+
+                placeholder->isweep++;
+            }
+            ObservableShow(obs,placeholder,prefix,4);
+            DestroyObservable(obs);
+        }
+    }
 
 
     DestroySEPlaceHolder(placeholder);
