@@ -1138,7 +1138,8 @@ void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, doub
         
         for(beta=beta_i;beta<beta_f;beta+=interv){
             int nobs=9;
-            int nave=(int)(nsweep*beta);
+            int nave=(int)(nsweep*beta*beta);
+            if(nave<thermal) nave=thermal;
             SEPlaceHolderSetNsweep(placeholder, nave, thermal);
 
             Observable *obs = CreateObservable(nobs,nave);
