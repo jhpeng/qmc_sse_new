@@ -127,6 +127,17 @@ int MCCheckInnerProduct(SEPlaceHolder* placeholder)
     return check;
 }
 
+void MCSaveConf(SEPlaceHolder* placeholder, int lx, int ly, char* prefix){
+    FILE* sfile = fopen(prefix,"w");
+    for(int j=0;j<ly;++j){
+        for(int i=0;i<lx;++i){
+            fprintf(sfile,"%d ",placeholder->lconf->sigma0->data[j*lx+i]);
+        }
+        fprintf(sfile,"\n");
+    }
+    fclose(sfile);
+}
+
 void MCIsotropy2D(double beta, int* shape, int nsweep, int cutoff, int seed)
 {
     int ndiff=2,length=50;
@@ -1122,6 +1133,14 @@ void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, doub
 
                     ObservableQuantumCorrelator(placeholder);
                     ObservableDoMeasurement(obs,placeholder);
+
+                    if(k==(ntime*2-1)){
+                        char conf_prefix[128];
+                        sprintf(conf_prefix,"conf/conf_lattice_%d_scheme_%d_shape_%d_%d_J_%.4f_dJ_%.4f_p_%.4f_id_%d_seed_%d.txt",
+                                                lattice,mode,shape[0],shape[1],J,dJ,p,(i_b*nsweep+j),seed);
+
+                        MCSaveConf(placeholder,shape[0],shape[1],conf_prefix);
+                    }
 
                     placeholder->isweep++;
                 }
