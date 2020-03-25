@@ -32,37 +32,52 @@ void MCDiagonalOperatorUpdate(SEPlaceHolder* placeholder)
 
     LatticeConfSynchronizeSigma(placeholder->lconf);
 
+    int index=0;
+    int type;
+
     for(p=0;p<length;++p){
+        type = placeholder->ops->sequence->data[p]%ndiff;
         if(placeholder->ops->sequence->data[p]==-1){
             bond = (int)(gsl_rng_uniform_pos(placeholder->rng)*Nb);
-            dis  = gsl_rng_uniform_pos(placeholder->rng);
             LatticeConfApplyMapping(placeholder->lconf,bond);
             left=placeholder->lconf->left;
             right=placeholder->lconf->right;
-            if(dis*2*(length-noo)<beta*placeholder->lconf->J->data[bond]*Nb && placeholder->lconf->sigmap->data[left]!=placeholder->lconf->sigmap->data[right]){
-                placeholder->ops->sequence->data[p]=bond*ndiff;
-                noo++;
+            if(placeholder->lconf->sigmap->data[left]!=placeholder->lconf->sigmap->data[right]){
+                dis  = gsl_rng_uniform_pos(placeholder->rng);
+                if(dis*2*(length-noo)<beta*placeholder->lconf->J->data[bond]*Nb){
+                    placeholder->ops->sequence->data[p]=bond*ndiff;
+                    noo++;
+                    placeholder->ops->sort->data[index]=p;
+                    index++;
+                }
             }
         }
-        else if(placeholder->ops->sequence->data[p]%ndiff==0){
+        else if(type==0){
             bond = placeholder->ops->sequence->data[p]/ndiff;
             dis  = gsl_rng_uniform_pos(placeholder->rng);
             if(dis*beta*placeholder->lconf->J->data[bond]*Nb<2*(length-noo+1)){
                 placeholder->ops->sequence->data[p]=-1;
                 noo--;
             }
+            else{
+                placeholder->ops->sort->data[index]=p;
+                index++;
+            }
         }
-        else if(placeholder->ops->sequence->data[p]%ndiff==1){
+        else if(type==1){
             bond = placeholder->ops->sequence->data[p]/ndiff;
             LatticeConfApplyMapping(placeholder->lconf,bond);
             left=placeholder->lconf->left;
             right=placeholder->lconf->right;
             placeholder->lconf->sigmap->data[left] *=-1;
             placeholder->lconf->sigmap->data[right]*=-1;
+            placeholder->ops->sort->data[index]=p;
+            index++;
         }
     }
 
-    OperatorSequenceSort(placeholder->ops);
+    placeholder->ops->noo=noo;
+    //OperatorSequenceSort(placeholder->ops);
 }
 
 void MCOffDiagOperatorUpdate(SEPlaceHolder* placeholder)

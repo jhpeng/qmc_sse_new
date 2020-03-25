@@ -208,9 +208,23 @@ int main(int argc, char* argv[])
     SetupFromArgument(argc,argv);
     //Execute();
     int shape[2];
+
+    //Test for the speed
+    if(0){
+        lx = 32;
+        ly = 32;
+        mode = 0;
+        J = 2.4981;
+        dJ = 0;
+        beta = 10;
+        thermal = 20000;
+        nsweep = 0;
+        nblock = 10;
+        seed = 39829;
+    }
+    
     shape[0]=lx;
     shape[1]=ly;
-    
     if(help) return 0;
     else MCGeneralSchemeAndLattice(shape,mode,lattice,J,dJ,p,beta,beta_i,beta_f,interv,thermal,nsweep,nblock,ntime,seed);
 

@@ -334,6 +334,7 @@ void SEPlaceHolderSetLength(SEPlaceHolder* placeholder, int length, int ndiff)
         placeholder->length=length;
         placeholder->ops = CreateOperatorSequence(length,ndiff);
         placeholder->opl = CreateOperatorLoop(length);
+        placeholder->ops->noo=0;
     }
 }
 
