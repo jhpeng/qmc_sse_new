@@ -949,13 +949,13 @@ void MCGeneralSchemeAndLattice(int* shape, int mode, int lattice, double J, doub
         SEPlaceHolderSetBeta(placeholder, beta);
         SEPlaceHolderCheckSetting(placeholder);
 
-        int nobs=8;
+        int nobs=10;
         int nave=nsweep;
         Observable *obs = CreateObservable(nobs,nave);
         ObservableSetMeasurement(obs,ObservableSpecificEnergy,"energy",NULL);
         ObservableSetMeasurement(obs,ObservableMagnetization,"magn_z",NULL);
-        //ObservableSetMeasurement(obs,ObservableFastStaggeredX,"stag_x",NULL);
-        //ObservableSetMeasurement(obs,ObservableFastStaggeredY,"stag_y",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStaggeredX,"stag_x",NULL);
+        ObservableSetMeasurement(obs,ObservableFastStaggeredY,"stag_y",NULL);
         ObservableSetMeasurement(obs,ObservableSusceptibility,"susc_z",NULL);
         ObservableSetMeasurement(obs,ObservableFastStiffnessX,"stif_x",NULL);
         ObservableSetMeasurement(obs,ObservableFastStiffnessY,"stif_y",NULL);
